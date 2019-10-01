@@ -1,0 +1,37 @@
+.file-uploader-container {
+  max-height: 150px;
+}
+.thumbnail {
+  height: 200px;
+  overflow: hidden;
+}
+.thumbnail > img {
+  max-width: 100%;
+  height: auto;
+}
+.title {
+  text-align: center;
+  padding: 16px 0px;
+}
+.image-element {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-container {
+  margin-bottom: 32px;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -32px; /* gutter size offset */
+  width: auto;
+  min-height: 400px;
+}
+.my-masonry-grid_column {
+  padding-left: 32px; /* gutter size */
+  background-clip: padding-box;
+}

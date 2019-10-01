@@ -1,23 +1,61 @@
 {
-  "name": "steda",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
+  "name": "nextjs-starter",
+  "version": "7.0.2",
+  "description": "A starter Next.js project with email and oAuth authentication",
+  "author": "Iain Collins <me@iaincollins.com>",
+  "license": "ISC",
+  "repository": "https://github.com/iaincollins/nextjs-starter.git",
+  "main": "index.js",
   "dependencies": {
-    "@material-ui/core": "^4.4.0",
-    "@material-ui/icons": "^4.2.1",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
-    "classnames": "^2.2.6",
-    "formik": "^1.5.8",
-    "formik-material-ui": "^0.0.22",
-    "next": "9.0.5",
-    "next-images": "^1.1.2",
-    "react": "16.9.0",
-    "react-dom": "16.9.0"
+    "babel-core": "^6.26.3",
+    "babel-plugin-wrap-in-js": "^1.1.1",
+    "bootstrap": "^4.3.1",
+    "connect-mongo": "^3.0.0",
+    "dotenv": "^8.1.0",
+    "express-session": "^1.16.2",
+    "ionicons": "^4.6.3",
+    "isomorphic-fetch": "^2.2.1",
+    "jquery": "^3.4.1",
+    "mongodb": "^3.3.2",
+    "nedb": "^1.8.0",
+    "next": "^9.0.7",
+    "next-auth": "^1.12.1",
+    "node-sass": "^4.12.0",
+    "nodemailer": "^6.3.0",
+    "nodemailer-direct-transport": "^3.3.2",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-twitter": "^1.0.4",
+    "popper.js": "^1.15.0",
+    "raw-loader": "^3.1.0",
+    "react": "^16.10.1",
+    "react-bootstrap-table": "^4.3.1",
+    "react-dom": "^16.10.1",
+    "react-dropzone": "^10.1.9",
+    "react-masonry-css": "^1.0.12",
+    "react-syntax-highlighter": "^11.0.2",
+    "react-transition-group": "^4.3.0",
+    "reactstrap": "^8.0.1",
+    "sass-loader": "^8.0.0",
+    "universal-cookie": "^4.0.2",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "cross-env": "^6.0.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "*"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development PORT=9000 node index.js",
+    "build": "next build",
+    "start": "node index.js",
+    "postinstall": "next build"
+  },
+  "engines": {
+    "node": "8.11.x"
   }
 }
