@@ -41,6 +41,7 @@ module.exports = () => {
       getProfile(profile) {
         // Normalize profile into one with {id, name, email} keys
         return {
+          profile,
           id: profile.id,
           name: profile.displayName,
           email: profile._json.email

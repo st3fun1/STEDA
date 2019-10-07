@@ -1,4 +1,7 @@
 const MongoClient = require("mongodb").MongoClient;
+const ObjectID = require("mongodb").ObjectID;
+const aws = require("aws-sdk");
+const uuid = require("uuid");
 
 let photoCollection;
 if (process.env.MONGO_URI) {
@@ -11,7 +14,7 @@ if (process.env.MONGO_URI) {
       .split("?")
       .shift();
     const db = mongoClient.db(dbName);
-    usersCollection = db.collection("photos");
+    photoCollection = db.collection("photos");
   });
 }
 
@@ -61,7 +64,7 @@ module.exports = expressApp => {
           }
         ]);
         usersCollection.find().toArray((err, photos) => {
-          console.log("ph", photos);
+          // console.log("ph", photos);
         });
 
         usersCollection.deleteMany({ year: 2019 });
@@ -70,5 +73,56 @@ module.exports = expressApp => {
       .catch(err => {
         return res.status(500).json(err);
       });
+  });
+
+  expressApp.post("/upload", (req, res) => {
+    let userData = null;
+    try {
+      userData = JSON.parse(req.body.user);
+    } catch (e) {
+      console.log("Invalid JSON");
+    }
+
+    const s3 = new aws.S3({
+      accessKeyId: process.env.AMAZON_S3_ID,
+      secretAccessKey: process.env.AMAZON_S3_SECRET,
+      region: process.env.BUCKET_REGION
+    });
+
+    if (req.file) {
+      const key = uuid() + "-" + req.file.originalname;
+
+      const params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: key,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+        ACL: process.env.AMAZON_ACCESS_CONTROL
+      };
+
+      s3.upload(params, (err, data) => {
+        console.log("err", err, data);
+        if (err) {
+          return res.status(500).json({ error: true, Message: err });
+        } else {
+          const newUploadedFile = {
+            description: req.file.originalname,
+            fileLink: process.env.AMAZON_S3_FILE_URL + key,
+            s3_key: key,
+            userId: userData ? ObjectID(userData.id) : null
+          };
+
+          photoCollection.insertOne(newUploadedFile, (err, data) => {
+            if (err) res.status(500).json(err);
+
+            return res.send(newUploadedFile);
+          });
+        }
+      });
+    } else {
+      return res
+        .status(500)
+        .json({ error: true, Message: "Error with the file upload system" });
+    }
   });
 };

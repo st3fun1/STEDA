@@ -3,15 +3,25 @@
 const next = require("next");
 const nextAuth = require("next-auth");
 const nextAuthConfig = require("./next-auth.config");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const path = require("path");
+const aws = require("aws-sdk");
+
+// Load environment variables from .env file if present
+require("dotenv").config();
+
+const s3 = new aws.S3({
+  accessKeyId: process.env.AMAZON_S3_ID,
+  secretAccessKey: process.env.AMAZON_S3_SECRET,
+  region: process.env.BUCKET_REGION
+});
 
 const routes = {
   admin: require("./routes/admin"),
   account: require("./routes/account"),
   photo: require("./routes/photo")
 };
-
-// Load environment variables from .env file if present
-require("dotenv").config();
 
 process.on("uncaughtException", function(err) {
   console.error("Uncaught Exception: ", err);
@@ -44,13 +54,26 @@ nextApp
     // Note We do not pass a port in nextAuthOptions, because we want to add some
     // additional routes before Express starts (if you do pass a port, NextAuth
     // tells NextApp to handle default routing and starts Express automatically).
+    nextAuthOptions.csrf = { blacklist: ["/upload"] };
     return nextAuth(nextApp, nextAuthOptions);
   })
   .then(nextAuthOptions => {
+    const storage = multer.memoryStorage();
+
+    const upload = multer({
+      storage: storage,
+      limits: { fileSize: 1000000 }
+    }).single("avatar");
+
     // Get Express and instance of Express from NextAuth
     const express = nextAuthOptions.express;
     const expressApp = nextAuthOptions.expressApp;
 
+    expressApp.use(upload);
+    expressApp.use((req, res, next) => {
+      console.log("REQ DATE", new Date().toLocaleDateString());
+      next();
+    });
     // Add admin routes
     routes.admin(expressApp);
 

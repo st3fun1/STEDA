@@ -4,12 +4,14 @@ import { Container, Row, Col } from "reactstrap";
 import Page from "../components/page";
 import Layout from "../components/layout";
 import Masonry from "react-masonry-css";
+import { NextAuth } from "next-auth/client";
 import uuid from "uuid/v4";
 import ReactDropzone from "react-dropzone";
+import axios from "axios";
 
 import { Button, Form, FormGroup } from "reactstrap";
 
-import "./photos-list.css";
+import "./photos-list.scss";
 
 const breakpointColumnsObj = {
   default: 4,
@@ -74,15 +76,52 @@ export default class extends Page {
   };
 
   onDrop = e => {
+    console.log("props", this.props.session);
     this.setState({
       photos: [
         ...this.state.photos,
         {
-          src: URL.createObjectURL(e[0])
+          src: URL.createObjectURL(e[0]),
+          file: e[0]
         }
       ]
     });
-    console.log("onDrop", e);
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
+
+    const csrf = this.props.session.csrfToken;
+
+    let formData = new FormData();
+    formData.append(
+      "avatar",
+      this.state.photos[this.state.photos.length - 1].file
+    );
+    formData.set("user", JSON.stringify(this.props.session.user));
+    const config = {
+      headers: {
+        "Content-Type":
+          'multipart/form-data; charset=utf-8; boundary="another cool boundary"'
+      }
+    };
+    axios
+      .post("/upload", formData, config)
+      .then(value => console.log("value", value))
+      .catch(err => console.log(err));
+  };
+
+  onChange = e => {
+    e.persist();
+    this.setState({
+      photos: [
+        ...this.state.photos,
+        {
+          src: URL.createObjectURL(e.target.files[0]),
+          file: e.target.files[0]
+        }
+      ]
+    });
   };
 
   render() {
@@ -111,12 +150,13 @@ export default class extends Page {
             </Row>
             <Row>
               <Col>
-                <Form
-                  onSubmit={e => {
-                    e.preventDefault();
-                  }}
-                >
+                <Form onSubmit={this.onSubmit}>
                   <FormGroup>
+                    <input
+                      type="file"
+                      name="myImage"
+                      onChange={this.onChange}
+                    />
                     <ReactDropzone onDrop={this.onDrop}>
                       {({ getRootProps, getInputProps }) => {
                         return (
@@ -144,7 +184,9 @@ export default class extends Page {
                       }}
                     </ReactDropzone>
                   </FormGroup>
-                  <Button>Submit</Button>
+                  <FormGroup>
+                    <Button>Submit</Button>
+                  </FormGroup>
                 </Form>
               </Col>
             </Row>

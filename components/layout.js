@@ -76,7 +76,7 @@ export default class extends React.Component {
           <script src="https://cdn.polyfill.io/v2/polyfill.min.js" />
         </Head>
         <Navbar light className="navbar navbar-expand-md pt-3 pb-3">
-          {/* <Link prefetch href="/">
+          {/* <Link  href="/">
             <NavbarBrand href="/">
               <span className="icon ion-md-home mr-1"></span> {Package.name}
             </NavbarBrand>
@@ -99,7 +99,12 @@ export default class extends React.Component {
                   <span className="dropdown-toggle nav-link">Examples</span>
                 </div>
                 <div className="dropdown-menu">
-                  {/* <Link prefetch href="/examples/authentication">
+                  <Link href="/photos-list">
+                    <a href="/photos-list" className="dropdown-item">
+                      Photo List
+                    </a>
+                  </Link>
+                  <Link href="/examples/authentication">
                     <a
                       href="/examples/authentication"
                       className="dropdown-item"
@@ -107,26 +112,26 @@ export default class extends React.Component {
                       Auth
                     </a>
                   </Link>
-                  <Link prefetch href="/examples/async">
+                  <Link href="/examples/async">
                     <a href="/examples/async" className="dropdown-item">
                       Async Data
                     </a>
                   </Link>
-                  <Link prefetch href="/examples/layout">
+                  <Link href="/examples/layout">
                     <a href="/examples/layout" className="dropdown-item">
                       Layout
                     </a>
                   </Link>
-                  <Link prefetch href="/examples/routing">
+                  <Link href="/examples/routing">
                     <a href="/examples/routing" className="dropdown-item">
                       Routing
                     </a>
                   </Link>
-                  <Link prefetch href="/examples/styling">
+                  <Link href="/examples/styling">
                     <a href="/examples/styling" className="dropdown-item">
                       Styling
                     </a>
-                  </Link> */}
+                  </Link>
                 </div>
               </div>
             </Nav>
@@ -286,7 +291,7 @@ export class UserMenu extends React.Component {
               </span>
             </div>
             <div className="dropdown-menu">
-              <Link prefetch href="/account">
+              <Link href="/account">
                 <a href="/account" className="dropdown-item">
                   <span className="icon ion-md-person mr-1"></span> Your Account
                 </a>
@@ -352,7 +357,7 @@ export class AdminMenuItem extends React.Component {
     if (this.props.session.user && this.props.session.user.admin === true) {
       return (
         <React.Fragment>
-          <Link prefetch href="/admin">
+          <Link href="/admin">
             <a href="/admin" className="dropdown-item">
               <span className="icon ion-md-settings mr-1"></span> Admin
             </a>
