@@ -1,11 +1,13 @@
 # Pinterest-like Clone - STEDA(Stefan + Dana)
 
+# PRIORITY - REST API SI AWS S3 integration
+
 # Main features
 
-    1. Login system - Auth0 -> Twitter, Github, Facebook
-    2. Photo gallery - Masonry.js/Flexbox
-    3. User list
-    4. User profile - with data from the social networks
+    1. Login system - Auth0 -> Twitter, Github, Facebook **BASICS DONE**
+    2. Photo gallery - Masonry.js/Flexbox **BASIC DONE**
+    3. User list - **BASICS DONE**
+    4. **DOING NOW** User profile - with data from the social networks
     5. Image page with comments
         - comments writter with markdown
     6. Delete images

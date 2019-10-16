@@ -4,23 +4,15 @@ const next = require("next");
 const nextAuth = require("next-auth");
 const nextAuthConfig = require("./next-auth.config");
 const multer = require("multer");
-const multerS3 = require("multer-s3");
-const path = require("path");
-const aws = require("aws-sdk");
 
 // Load environment variables from .env file if present
 require("dotenv").config();
 
-const s3 = new aws.S3({
-  accessKeyId: process.env.AMAZON_S3_ID,
-  secretAccessKey: process.env.AMAZON_S3_SECRET,
-  region: process.env.BUCKET_REGION
-});
-
 const routes = {
   admin: require("./routes/admin"),
   account: require("./routes/account"),
-  photo: require("./routes/photo")
+  photo: require("./routes/photo"),
+  user: require("./routes/user")
 };
 
 process.on("uncaughtException", function(err) {
@@ -54,7 +46,7 @@ nextApp
     // Note We do not pass a port in nextAuthOptions, because we want to add some
     // additional routes before Express starts (if you do pass a port, NextAuth
     // tells NextApp to handle default routing and starts Express automatically).
-    nextAuthOptions.csrf = { blacklist: ["/upload"] };
+    nextAuthOptions.csrf = { blacklist: ["/api/photo/upload"] };
     return nextAuth(nextApp, nextAuthOptions);
   })
   .then(nextAuthOptions => {
@@ -70,10 +62,6 @@ nextApp
     const expressApp = nextAuthOptions.expressApp;
 
     expressApp.use(upload);
-    expressApp.use((req, res, next) => {
-      console.log("REQ DATE", new Date().toLocaleDateString());
-      next();
-    });
     // Add admin routes
     routes.admin(expressApp);
 
@@ -83,6 +71,10 @@ nextApp
     // Add photos route
 
     routes.photo(expressApp);
+
+    // Add user route
+
+    routes.user(expressApp);
 
     // Serve fonts from ionicon npm module
     expressApp.use(
@@ -95,7 +87,13 @@ nextApp
     expressApp.get("/custom-route/:id", (req, res) => {
       // Note: To make capturing a slug easier when rendering both client
       // and server side, name it ':id'
-      return nextApp.render(req, res, "/examples/routing", req.params);
+      return nextApp.render(req, res, "/examples/routing", req);
+    });
+
+    expressApp.get("/user/:id", (req, res) => {
+      return nextApp.render(req, res, "/user", {
+        params: req.params
+      });
     });
 
     // Default catch-all handler to allow Next.js to handle all other routes

@@ -71,7 +71,7 @@ export default class extends React.Component {
         <Head>
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>{this.props.title || "Next.js Starter Project"}</title>
+          <title>{this.props.title || "STEDA"}</title>
           <style dangerouslySetInnerHTML={{ __html: Styles }} />
           <script src="https://cdn.polyfill.io/v2/polyfill.min.js" />
         </Head>
@@ -93,47 +93,26 @@ export default class extends React.Component {
             className="nojs-navbar-label mt-2"
           />
           <div className="nojs-navbar">
-            <Nav navbar>
-              <div tabIndex="1" className="dropdown nojs-dropdown">
-                <div className="nav-item">
-                  <span className="dropdown-toggle nav-link">Examples</span>
-                </div>
-                <div className="dropdown-menu">
-                  <Link href="/photos-list">
-                    <a href="/photos-list" className="dropdown-item">
-                      Photo List
-                    </a>
-                  </Link>
-                  <Link href="/examples/authentication">
-                    <a
-                      href="/examples/authentication"
-                      className="dropdown-item"
-                    >
-                      Auth
-                    </a>
-                  </Link>
-                  <Link href="/examples/async">
-                    <a href="/examples/async" className="dropdown-item">
-                      Async Data
-                    </a>
-                  </Link>
-                  <Link href="/examples/layout">
-                    <a href="/examples/layout" className="dropdown-item">
-                      Layout
-                    </a>
-                  </Link>
-                  <Link href="/examples/routing">
-                    <a href="/examples/routing" className="dropdown-item">
-                      Routing
-                    </a>
-                  </Link>
-                  <Link href="/examples/styling">
-                    <a href="/examples/styling" className="dropdown-item">
-                      Styling
-                    </a>
-                  </Link>
-                </div>
-              </div>
+            <Nav
+              style={{
+                justifyContent: "center"
+              }}
+              navbar
+            >
+              <NavItem>
+                <Link href="/user-list">
+                  <a href="/user-list" className="dropdown-item">
+                    Users List
+                  </a>
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link href="/photos-list">
+                  <a href="/photos-list" className="dropdown-item">
+                    Photo List
+                  </a>
+                </Link>
+              </NavItem>
             </Nav>
             <UserMenu
               session={this.props.session}

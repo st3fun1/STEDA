@@ -1,22 +1,31 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import Page from "../components/page";
-import Layout from "../components/layout";
 import Masonry from "react-masonry-css";
-import { getPhotoList } from "modules/photo/actions/photoActions";
 import { Container, Row, Col } from "reactstrap";
 
+import Layout from "../components/layout";
+import Page from "../components/page";
+import { getUserById } from "modules/user/actions/userActions";
+import { getPhotosByUserId } from "modules/photo/actions/photoActions";
+
 import "./photos-list.scss";
-import Link from "next/link";
-class PhotoList extends Page {
+
+class User extends Page {
+  static async getInitialProps({ query, ...p }) {
+    let props = await super.getInitialProps(p);
+    props.userId = query.params.id;
+    return props;
+  }
+
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
-    const { getPhotoList } = this.props;
-    getPhotoList();
+    const { userId } = this.props;
+    this.props.getUserById(userId);
+    this.props.getPhotosByUserId(userId);
   }
 
   render() {
@@ -25,20 +34,17 @@ class PhotoList extends Page {
       return (
         element.location && (
           <div className="image-container" key={element._id}>
-            <Link href={`/photo/${element._id}`}>
-              <a href={`/photo/${element._id}`}>
-                <img className="image-element" src={element.location} />
-              </a>
-            </Link>
+            <img className="image-element" src={element.location} />
           </div>
         )
       );
     });
-
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
-          <h1 className="title">Photo Gallery</h1>
+          <h1 className="title">
+            User: {this.props.user ? this.props.user.email : ""}
+          </h1>
           <Row>
             <Col>
               <Masonry
@@ -55,21 +61,22 @@ class PhotoList extends Page {
   }
 }
 
-PhotoList.defaultProps = {
+User.defaultProps = {
   photos: []
 };
 
 const mapStateToProps = state => {
   return {
-    photos: state.photo.photos
+    user: state.user.currentUser,
+    photos: state.photo.photosByUserId
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ getPhotoList }, dispatch);
+  return bindActionCreators({ getUserById, getPhotosByUserId }, dispatch);
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PhotoList);
+)(User);

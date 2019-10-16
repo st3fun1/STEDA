@@ -23,59 +23,62 @@ module.exports = expressApp => {
     throw new Error("expressApp option must be an express server instance");
   }
 
-  expressApp.get("/photo/list", (req, res) => {
+  expressApp.get("/api/photo/list", (req, res) => {
     return new Promise((resolve, reject) => {
-      resolve();
+      photoCollection.find({}).toArray((err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(data);
+      });
     })
       .then(photos => {
-        return photos;
-      })
-      .then(count => {
-        usersCollection.insertOne({
-          url: "https://www.google.com",
-          name: "Some Photo",
-          year: 2019
-        });
-        usersCollection.insertMany([
-          {
-            url: "https://www.google3.com",
-            name: "Some Photo 3",
-            year: 2019
-          },
-          {
-            url: "https://www.google3.com",
-            name: "Some Photo 3",
-            year: 2019
-          },
-          {
-            url: "https://www.google4.com",
-            name: "Some Photo 4",
-            year: 2019
-          },
-          {
-            url: "https://www.google5.com",
-            name: "Some Photo 5",
-            year: 2019
-          },
-          {
-            url: "https://www.google6.com",
-            name: "Some Photo 6",
-            year: 2019
-          }
-        ]);
-        usersCollection.find().toArray((err, photos) => {
-          // console.log("ph", photos);
-        });
-
-        usersCollection.deleteMany({ year: 2019 });
-        return res.json(count);
+        res.json(photos);
       })
       .catch(err => {
-        return res.status(500).json(err);
+        return res.status(500);
       });
   });
 
-  expressApp.post("/upload", (req, res) => {
+  expressApp.get("/api/photo/byUserId/:userId", (req, res) => {
+    const userId = req.params.userId;
+    return new Promise((resolve, reject) => {
+      photoCollection
+        .find({
+          userId: ObjectID(userId)
+        })
+        .toArray((err, data) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(data);
+        });
+    })
+      .then(photos => {
+        res.json(photos);
+      })
+      .catch(err => {
+        return res.status(500);
+      });
+  });
+
+  expressApp.get("/api/photo/:photoId", (req, res) => {
+    const photoId = req.params.photoId;
+    return new Promise((resolve, reject) => {
+      photoCollection
+        .find({
+          id: ObjectID(photoId)
+        })
+        .toArray((err, data) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(data);
+        });
+    });
+  });
+
+  expressApp.post("/api/photo/upload", (req, res) => {
     let userData = null;
     try {
       userData = JSON.parse(req.body.user);
@@ -101,13 +104,13 @@ module.exports = expressApp => {
       };
 
       s3.upload(params, (err, data) => {
-        console.log("err", err, data);
         if (err) {
           return res.status(500).json({ error: true, Message: err });
         } else {
           const newUploadedFile = {
             description: req.file.originalname,
             fileLink: process.env.AMAZON_S3_FILE_URL + key,
+            location: data.Location,
             s3_key: key,
             userId: userData ? ObjectID(userData.id) : null
           };

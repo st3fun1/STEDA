@@ -26,6 +26,7 @@
     "nedb": "^1.8.0",
     "next": "^9.0.7",
     "next-auth": "^1.12.1",
+    "next-redux-wrapper": "^4.0.1",
     "node-sass": "^4.12.0",
     "nodemailer": "^6.3.0",
     "nodemailer-direct-transport": "^3.3.2",
@@ -40,9 +41,12 @@
     "react-dom": "^16.10.1",
     "react-dropzone": "^10.1.9",
     "react-masonry-css": "^1.0.12",
+    "react-redux": "^7.1.1",
     "react-syntax-highlighter": "^11.0.2",
     "react-transition-group": "^4.3.0",
     "reactstrap": "^8.0.1",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0",
     "sass-loader": "^8.0.0",
     "universal-cookie": "^4.0.2",
     "uuid": "^3.3.3"
@@ -55,7 +59,7 @@
     "fsevents": "*"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development PORT=9000 nodemon -w index.js",
+    "dev": "cross-env NODE_ENV=development PORT=9000 nodemon",
     "build": "next build",
     "start": "node index.js",
     "postinstall": "next build"

@@ -1,5 +1,6 @@
 const withCSS = require("@zeit/next-css");
 const withSass = require("@zeit/next-sass");
+const path = require("path");
 
 function HACK_removeMinimizeOptionFromCssLoaders(config) {
   console.warn(
@@ -20,6 +21,7 @@ module.exports = withSass(
   withCSS({
     webpack: (config, { dev }) => {
       HACK_removeMinimizeOptionFromCssLoaders(config);
+      config.resolve.modules.push(path.resolve("./"));
       return config;
     }
   })
