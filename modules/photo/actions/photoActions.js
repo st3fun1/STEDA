@@ -3,6 +3,7 @@ import {
   GET_PHOTOS,
   GET_PHOTO_BY_ID,
   UPLOAD_PHOTO,
+  DELETE_PHOTO,
   GET_PHOTOS_BY_USER_ID
 } from "../reducers/photoTypes";
 
@@ -25,13 +26,32 @@ const getPhotosByUserId = userId => dispatch => {
 };
 
 const getPhotoById = photoId => dispatch => {
-  axios.get(`/api/photo/${photoId}`).then(response => {
-    console.log("photo", photo);
-    dispatch({
-      type: GET_PHOTOS_BY_USER_ID,
-      payload: response.data
+  axios
+    .get(`/api/photo/${photoId}`)
+    .then(response => {
+      dispatch({
+        type: GET_PHOTO_BY_ID,
+        payload: response.data
+      });
+    })
+    .catch(error => {
+      console.log("photo by id error", error);
     });
-  });
 };
 
-export { getPhotoList, getPhotosByUserId, getPhotoById };
+const deletePhotoById = photoID => dispatch => {
+  axios
+    .get(`/api/photo/${photoId}/delete`)
+    .then(response => {
+      console.log("DELETE PHOTO", response);
+      dispatch({
+        type: DELETE_PHOTO,
+        payload: photoID
+      });
+    })
+    .catch(error => {
+      console.log("delete photo error", error);
+    });
+};
+
+export { getPhotoList, getPhotosByUserId, getPhotoById, deletePhotoById };

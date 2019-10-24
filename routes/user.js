@@ -20,6 +20,17 @@ module.exports = expressApp => {
     throw new Error("expressApp option must be an express server instance");
   }
 
+  expressApp.post("/auth/signup", (req, res) => {
+    const formData = req.body;
+    if (
+      req.body.email &&
+      req.body.password &&
+      req.body.password === req.body.repeatPassword
+    ) {
+    }
+    res.status(500).json({ error: "Invalid form data." });
+  });
+
   expressApp.get("/api/user-list", (req, res) => {
     userCollection.find({}).toArray((err, users) => {
       if (err) {
@@ -32,6 +43,7 @@ module.exports = expressApp => {
 
   expressApp.get("/api/user/:id", (req, res) => {
     const userId = req.params.id;
+    console.log("id", userId);
     userCollection
       .find({
         _id: ObjectId(userId)

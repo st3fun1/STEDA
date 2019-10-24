@@ -212,26 +212,61 @@ module.exports = () => {
           });
         });
       },
-      // Define method for sending links for signing in over email.
-      sendSignInEmail: ({ email = null, url = null } = {}) => {
-        nodemailer.createTransport(nodemailerTransport).sendMail(
-          {
-            to: email,
-            from: process.env.EMAIL_FROM,
-            subject: "Sign in link",
-            text: `Use the link below to sign in:\n\n${url}\n\n`,
-            html: `<p>Use the link below to sign in:</p><p>${url}</p>`
-          },
-          err => {
-            if (err) {
-              console.error("Error sending email to " + email, err);
+      // Credentials Sign In
+      //
+      // If you use this you will need to define your own way to validate
+      // credentials. Unlike with oAuth or Email Sign In, accounts are not
+      // created automatically so you will need to provide a way to create them.
+      //
+      // This feature is intended for strategies like Two Factor Authentication.
+      //
+      // To disable this option, do not set signin (or set it to null).
+      signIn: ({ form, req }) => {
+        console.log("form", form);
+        return new Promise((resolve, reject) => {
+          // Should validate credentials (e.g. hash password, compare 2FA token
+          // etc) and return a valid user object from a database.
+          return usersCollection.findOne(
+            {
+              email: form.email
+            },
+            (err, user) => {
+              console.log("user", user);
+              if (err) return reject(err);
+              if (!user) return resolve(null);
+
+              // Check credentials - e.g. compare bcrypt password hashes
+              if (form.password === user.password) {
+                // If valid, return user object - e.g. { id, name, email }
+                return resolve(user);
+              } else {
+                // If invalid, return null
+                return resolve(null);
+              }
             }
-          }
-        );
-        if (process.env.NODE_ENV === "development") {
-          console.log("Generated sign in link " + url + " for " + email);
-        }
+          );
+        });
       }
+      // Define method for sending links for signing in over email.
+      // sendSignInEmail: ({ email = null, url = null } = {}) => {
+      //   nodemailer.createTransport(nodemailerTransport).sendMail(
+      //     {
+      //       to: email,
+      //       from: process.env.EMAIL_FROM,
+      //       subject: "Sign in link",
+      //       text: `Use the link below to sign in:\n\n${url}\n\n`,
+      //       html: `<p>Use the link below to sign in:</p><p>${url}</p>`
+      //     },
+      //     err => {
+      //       if (err) {
+      //         console.error("Error sending email to " + email, err);
+      //       }
+      //     }
+      //   );
+      //   if (process.env.NODE_ENV === "development") {
+      //     console.log("Generated sign in link " + url + " for " + email);
+      //   }
+      // }
     });
   });
 };

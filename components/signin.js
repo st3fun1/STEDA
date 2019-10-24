@@ -9,6 +9,10 @@ export default class extends React.Component {
     super(props);
     this.state = {
       email: "",
+      password: "",
+      signupRepeatPassword: "",
+      signupPassword: "",
+      signupEmail: "",
       session: this.props.session,
       providers: this.props.providers,
       submitting: false
@@ -20,6 +24,44 @@ export default class extends React.Component {
   handleEmailChange(event) {
     this.setState({
       email: event.target.value.trim()
+    });
+  }
+
+  handlePasswordChange = event => {
+    this.setState({
+      password: event.target.value.trim()
+    });
+  };
+
+  handleSignupRepeatPassword = event => {
+    this.setState({
+      signupRepeatPassword: event.target.value.trim()
+    });
+  };
+
+  handleSignUpPasswordChange = event => {
+    this.setState({
+      signupPassword: event.target.value.trim()
+    });
+  };
+
+  handleSignupEmailChange = event => {
+    this.setState({
+      signupEmail: event.target.value.trim()
+    });
+  };
+
+  handleSignup(event) {
+    event.preventDefault();
+    if (
+      !this.state.signupEmail &&
+      !this.state.signupPassword &&
+      this.state.signupPassword !== this.state.signupRepeatPassword
+    )
+      return;
+
+    this.setState({
+      submitting: true
     });
   }
 
@@ -36,14 +78,18 @@ export default class extends React.Component {
     const cookies = new Cookies();
     cookies.set("redirect_url", window.location.pathname, { path: "/" });
 
-    NextAuth.signin(this.state.email)
-      .then(() => {
-        Router.push(`/auth/check-email?email=${this.state.email}`);
+    NextAuth.signin({
+      email: this.state.email,
+      password: this.state.password
+    })
+      .then(authenticated => {
+        Router.push(`/auth/callback`);
       })
-      .catch(err => {
-        Router.push(
-          `/auth/error?action=signin&type=email&email=${this.state.email}`
-        );
+      .catch(() => {
+        this.setState({
+          submitting: false
+        });
+        alert("Authentication failed.");
       });
   }
 
@@ -65,7 +111,7 @@ export default class extends React.Component {
               <Form
                 id="signin"
                 method="post"
-                action="/auth/email/signin"
+                action="/auth/signin"
                 onSubmit={this.handleSubmit}
               >
                 <Input
@@ -87,6 +133,19 @@ export default class extends React.Component {
                     onChange={this.handleEmailChange}
                   />
                 </p>
+                <p>
+                  <Label htmlFor="password">Password</Label>
+                  <br />
+                  <Input
+                    name="password"
+                    disabled={this.state.submitting}
+                    type="password"
+                    id="password"
+                    className="form-control"
+                    value={this.state.password}
+                    onChange={this.handlePasswordChange}
+                  />
+                </p>
                 <p className="text-right">
                   <Button
                     id="submitButton"
@@ -98,10 +157,85 @@ export default class extends React.Component {
                     {this.state.submitting === true && (
                       <span className="icon icon-spin ion-md-refresh mr-2" />
                     )}
-                    Sign in with email
+                    Sign in now
                   </Button>
                 </p>
               </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col>or</Col>
+          </Row>
+          <Row>
+            <Col>
+              <Col xs={12} md={6}>
+                <Form
+                  id="signin"
+                  method="post"
+                  action="/auth/signup"
+                  onSubmit={this.handleSignup}
+                >
+                  <Input
+                    name="_csrf"
+                    type="hidden"
+                    value={this.state.session.csrfToken}
+                  />
+                  <p>
+                    <Label htmlFor="email">Email address</Label>
+                    <br />
+                    <Input
+                      name="email"
+                      disabled={this.state.submitting}
+                      type="text"
+                      placeholder="j.smith@example.com"
+                      id="email"
+                      className="form-control"
+                      value={this.state.signupEmail}
+                      onChange={this.handleSignupEmailChange}
+                    />
+                  </p>
+                  <p>
+                    <Label htmlFor="password">Password</Label>
+                    <br />
+                    <Input
+                      name="password"
+                      disabled={this.state.submitting}
+                      type="password"
+                      id="password"
+                      className="form-control"
+                      value={this.state.signupPassword}
+                      onChange={this.handleSignUpPasswordChange}
+                    />
+                  </p>
+                  <p>
+                    <Label htmlFor="password">Repeat Password</Label>
+                    <br />
+                    <Input
+                      name="password"
+                      disabled={this.state.submitting}
+                      type="password"
+                      id="password"
+                      className="form-control"
+                      value={this.state.signupRepeatPassword}
+                      onChange={this.handleSignupRepeatPassword}
+                    />
+                  </p>
+                  <p className="text-right">
+                    <Button
+                      id="submitButton"
+                      disabled={this.state.submitting}
+                      outline
+                      color="dark"
+                      type="submit"
+                    >
+                      {this.state.submitting === true && (
+                        <span className="icon icon-spin ion-md-refresh mr-2" />
+                      )}
+                      Register
+                    </Button>
+                  </p>
+                </Form>
+              </Col>
             </Col>
           </Row>
         </React.Fragment>

@@ -96,6 +96,12 @@ nextApp
       });
     });
 
+    expressApp.get("/photo/:id", (req, res) => {
+      return nextApp.render(req, res, "/photo", {
+        params: req.params
+      });
+    });
+
     // Default catch-all handler to allow Next.js to handle all other routes
     expressApp.all("*", (req, res) => {
       let nextRequestHandler = nextApp.getRequestHandler();

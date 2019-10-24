@@ -24,7 +24,7 @@ export default (state = initialState, action) => {
     case GET_PHOTO_BY_ID:
       return {
         ...state,
-        photo: action.payload
+        photoById: action.payload
       };
     case UPLOAD_PHOTO:
       return {
@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
     case GET_PHOTOS_BY_USER_ID:
       return {
         ...state,
-        photosByUserId: [...state.photosByUserId, ...action.payload]
+        photosByUserId: action.payload
       };
     default:
       return state;

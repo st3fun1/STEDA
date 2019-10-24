@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Masonry from "react-masonry-css";
 import { Container, Row, Col } from "reactstrap";
+import uuid from "uuid/v4";
 
 import Layout from "../components/layout";
 import Page from "../components/page";
@@ -10,30 +11,29 @@ import { getUserById } from "modules/user/actions/userActions";
 import { getPhotosByUserId } from "modules/photo/actions/photoActions";
 
 import "./photos-list.scss";
+import { NextAuth } from "next-auth/client";
 
 class User extends Page {
-  static async getInitialProps({ query, ...p }) {
-    let props = await super.getInitialProps(p);
-    props.userId = query.params.id;
-    return props;
-  }
-
   constructor(props) {
     super(props);
+    this.state = {
+      userId: props.query.params.id
+    };
   }
 
   componentDidMount() {
-    const { userId } = this.props;
+    const { userId } = this.state;
     this.props.getUserById(userId);
     this.props.getPhotosByUserId(userId);
   }
 
   render() {
     const { photos } = this.props;
+    console.log("this", this.props.session, photos);
     const childElements = photos.map(function(element) {
       return (
         element.location && (
-          <div className="image-container" key={element._id}>
+          <div className="image-container" key={uuid()}>
             <img className="image-element" src={element.location} />
           </div>
         )

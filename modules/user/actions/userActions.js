@@ -3,7 +3,6 @@ import { GET_USERS_LIST, GET_USER } from "../reducers/userTypes";
 
 const getUserList = () => dispatch => {
   axios.get("/api/user-list").then(response => {
-    console.log("response", response);
     dispatch({
       type: GET_USERS_LIST,
       payload: response.data.users
@@ -12,8 +11,8 @@ const getUserList = () => dispatch => {
 };
 
 const getUserById = id => dispatch => {
+  console.log("id: ", id);
   axios.get(`/api/user/${id}`).then(response => {
-    console.log("response", response);
     dispatch({
       type: GET_USER,
       payload: response.data.user

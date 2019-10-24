@@ -67,15 +67,21 @@ module.exports = expressApp => {
     return new Promise((resolve, reject) => {
       photoCollection
         .find({
-          id: ObjectID(photoId)
+          _id: ObjectID(photoId)
         })
         .toArray((err, data) => {
           if (err) {
             return reject(err);
           }
-          return resolve(data);
+          return resolve(data ? data[0] : null);
         });
-    });
+    })
+      .then(data => {
+        res.json(data);
+      })
+      .catch(err => {
+        return res.status(500);
+      });
   });
 
   expressApp.post("/api/photo/upload", (req, res) => {
