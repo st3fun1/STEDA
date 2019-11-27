@@ -21,14 +21,33 @@ module.exports = expressApp => {
   }
 
   expressApp.post("/auth/signup", (req, res) => {
-    const formData = req.body;
+    const { signupEmail, signupPassword, signupRepeatPassword } = req.body;
+    console.log("body", req.body);
     if (
-      req.body.email &&
-      req.body.password &&
-      req.body.password === req.body.repeatPassword
+      signupEmail &&
+      signupPassword &&
+      signupPassword === signupRepeatPassword
     ) {
+      userCollection.insertOne(
+        {
+          email: signupEmail,
+          name: signupEmail,
+          password: signupPassword
+        },
+        (err, result) => {
+          console.log("response", result.ops[0], err);
+          if (err) {
+            res.status(500).json({ error: "Invalid form data." });
+          }
+
+          if (result) {
+            res.json(result.ops[0]);
+          }
+        }
+      );
+    } else {
+      res.status(500).json({ error: "Invalid form data." });
     }
-    res.status(500).json({ error: "Invalid form data." });
   });
 
   expressApp.get("/api/user-list", (req, res) => {

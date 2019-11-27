@@ -1,5 +1,6 @@
 import axios from "axios";
 import { GET_USERS_LIST, GET_USER } from "../reducers/userTypes";
+import { Router } from "next/router";
 
 const getUserList = () => dispatch => {
   axios.get("/api/user-list").then(response => {
@@ -20,4 +21,23 @@ const getUserById = id => dispatch => {
   });
 };
 
-export { getUserList, getUserById };
+const signUp = data => dispatch => {
+  console.log("data", data);
+  axios
+    .post("/auth/signup", data)
+    .then(response => {
+      dispatch({
+        type: GET_USER,
+        payload: response.data.user
+      });
+      //Save current URL so user is redirected back here after signing in
+      const cookies = new Cookies();
+      cookies.set("redirect_url", window.location.pathname, { path: "/" });
+      Router.push("/");
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+};
+
+export { getUserList, getUserById, signUp };

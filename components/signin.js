@@ -1,10 +1,14 @@
 import React from "react";
 import Router from "next/router";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import { Row, Col, Form, Input, Label, Button } from "reactstrap";
 import Cookies from "universal-cookie";
 import { NextAuth } from "next-auth/client";
 
-export default class extends React.Component {
+import { signUp } from "modules/user/actions/userActions";
+
+class SignInModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -51,19 +55,31 @@ export default class extends React.Component {
     });
   };
 
-  handleSignup(event) {
+  handleSignup = async event => {
     event.preventDefault();
-    if (
-      !this.state.signupEmail &&
-      !this.state.signupPassword &&
-      this.state.signupPassword !== this.state.signupRepeatPassword
-    )
-      return;
-
+    const { signupEmail, signupPassword, signupRepeatPassword } = this.state;
+    const { signUpUser } = this.props;
     this.setState({
       submitting: true
     });
-  }
+    if (
+      signupEmail &&
+      signupPassword &&
+      signupRepeatPassword &&
+      signupPassword === signupRepeatPassword
+    ) {
+      signUpUser({
+        _csrf: await NextAuth.csrfToken(),
+        signupEmail,
+        signupPassword,
+        signupRepeatPassword
+      });
+    }
+
+    this.setState({
+      submitting: false
+    });
+  };
 
   handleSubmit(event) {
     event.preventDefault();
@@ -170,7 +186,7 @@ export default class extends React.Component {
             <Col>
               <Col xs={12} md={6}>
                 <Form
-                  id="signin"
+                  id="signup"
                   method="post"
                   action="/auth/signup"
                   onSubmit={this.handleSignup}
@@ -181,40 +197,40 @@ export default class extends React.Component {
                     value={this.state.session.csrfToken}
                   />
                   <p>
-                    <Label htmlFor="email">Email address</Label>
+                    <Label htmlFor="signupEmail">Email address</Label>
                     <br />
                     <Input
-                      name="email"
+                      name="signupEmail"
                       disabled={this.state.submitting}
                       type="text"
                       placeholder="j.smith@example.com"
-                      id="email"
+                      id="signupEmail"
                       className="form-control"
                       value={this.state.signupEmail}
                       onChange={this.handleSignupEmailChange}
                     />
                   </p>
                   <p>
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="signupPassword">Password</Label>
                     <br />
                     <Input
-                      name="password"
+                      name="signupPassword"
                       disabled={this.state.submitting}
                       type="password"
-                      id="password"
+                      id="signupPassword"
                       className="form-control"
                       value={this.state.signupPassword}
                       onChange={this.handleSignUpPasswordChange}
                     />
                   </p>
                   <p>
-                    <Label htmlFor="password">Repeat Password</Label>
+                    <Label htmlFor="repeatPassword">Repeat Password</Label>
                     <br />
                     <Input
-                      name="password"
+                      name="repeatPassword"
                       disabled={this.state.submitting}
                       type="password"
-                      id="password"
+                      id="repeatPassword"
                       className="form-control"
                       value={this.state.signupRepeatPassword}
                       onChange={this.handleSignupRepeatPassword}
@@ -222,7 +238,7 @@ export default class extends React.Component {
                   </p>
                   <p className="text-right">
                     <Button
-                      id="submitButton"
+                      id="signUpSubmitBtn"
                       disabled={this.state.submitting}
                       outline
                       color="dark"
@@ -243,6 +259,16 @@ export default class extends React.Component {
     }
   }
 }
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({ signUpUser: signUp }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignInModal);
 
 export class SignInButtons extends React.Component {
   render() {
