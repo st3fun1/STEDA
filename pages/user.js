@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import Link from "next/link";
 import Masonry from "react-masonry-css";
 import { Container, Row, Col } from "reactstrap";
 import uuid from "uuid/v4";
@@ -29,12 +30,15 @@ class User extends Page {
 
   render() {
     const { photos } = this.props;
-    console.log("this", this.props.session, photos);
-    const childElements = photos.map(function(element) {
+    const childElements = photos.map(element => {
       return (
         element.location && (
           <div className="image-container" key={uuid()}>
-            <img className="image-element" src={element.location} />
+            <Link href={`/photo/${element._id}`}>
+              <a href={`/photo/${element._id}`}>
+                <img className="image-element" src={element.location} />
+              </a>
+            </Link>
           </div>
         )
       );
@@ -76,7 +80,4 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators({ getUserById, getPhotosByUserId }, dispatch);
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(User);
+export default connect(mapStateToProps, mapDispatchToProps)(User);

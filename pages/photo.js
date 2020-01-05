@@ -96,7 +96,4 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators({ getPhotoById }, dispatch);
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Photo);
+export default connect(mapStateToProps, mapDispatchToProps)(Photo);
