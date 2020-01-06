@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Page from "../components/page";
+import { NextAuth } from "next-auth/client";
 import Layout from "../components/layout";
 import {
   Container,
@@ -15,10 +16,10 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
-  FormText
+  Input
 } from "reactstrap";
 import { getPhotoById } from "modules/photo/actions/photoActions";
+import { addComment } from "modules/comment/actions/commentActions";
 
 class Photo extends Page {
   static async getInitialProps({ query, ...p }) {
@@ -29,6 +30,9 @@ class Photo extends Page {
 
   constructor(props) {
     super(props);
+    this.state = {
+      comment: null
+    };
   }
 
   componentDidMount() {
@@ -36,7 +40,24 @@ class Photo extends Page {
     getPhotoById(photoId);
   }
 
-  handleFormSubmit(e) {}
+  setComment = e => {
+    this.setState({ comment: e.target.value });
+  };
+
+  //TODO:  repeat arrow function
+  handleFormSubmit = async e => {
+    e.preventDefault();
+    const { photoId, photo, addComment } = this.props;
+    const reqObj = {
+      _csrf: await NextAuth.csrfToken(),
+      photoId,
+      userId: photo.userId,
+      comment: this.state.comment
+    };
+
+    console.log("req", reqObj);
+    addComment(reqObj);
+  };
 
   render() {
     const { photo } = this.props;
@@ -68,6 +89,8 @@ class Photo extends Page {
                     style={{ minHeight: "200px", overflowY: "hidden" }}
                     type="textarea"
                     name="comment"
+                    value={this.state.comment}
+                    onChange={this.setComment}
                     id="comment"
                     placeholder="What's on your mind?"
                   />
@@ -87,13 +110,14 @@ Photo.defaultProp = {
 };
 
 const mapStateToProps = state => {
+  console.log("state", state.photo);
   return {
     photo: state.photo.photoById
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ getPhotoById }, dispatch);
+  return bindActionCreators({ getPhotoById, addComment }, dispatch);
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Photo);

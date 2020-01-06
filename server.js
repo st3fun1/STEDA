@@ -12,7 +12,8 @@ const routes = {
   admin: require("./routes/admin"),
   account: require("./routes/account"),
   photo: require("./routes/photo"),
-  user: require("./routes/user")
+  user: require("./routes/user"),
+  comment: require("./routes/comment")
 };
 
 process.on("uncaughtException", function(err) {
@@ -75,6 +76,10 @@ nextApp
     // Add user route
 
     routes.user(expressApp);
+
+    // Add comment route
+
+    routes.comment(expressApp);
 
     // Serve fonts from ionicon npm module
     expressApp.use(
