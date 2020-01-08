@@ -1,4 +1,4 @@
-const { MongoClient, ObjectID } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 let commentCollection;
 if (process.env.MONGO_URI) {
@@ -31,11 +31,43 @@ module.exports = expressApp => {
           comment: req.body.comment
         },
         (err, data) => {
-          if (err) res.status(500).json(err);
-
-          return res.send(data);
+          if (err) {
+            return reject(err);
+          }
+          return resolve(data);
         }
       );
-    });
+    })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  });
+
+  expressApp.get("/api/commentsByPhotoId/:photoId", (req, res) => {
+    const photoId = req.params.photoId;
+    console.log("a: ", photoId);
+    return new Promise((resolve, reject) => {
+      commentCollection
+        .find({
+          photoId
+        })
+        .limit(10)
+        .sort({ $natural: -1 })
+        .toArray((err, data) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(data);
+        });
+    })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
   });
 };

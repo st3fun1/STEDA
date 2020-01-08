@@ -19,7 +19,10 @@ import {
   Input
 } from "reactstrap";
 import { getPhotoById } from "modules/photo/actions/photoActions";
-import { addComment } from "modules/comment/actions/commentActions";
+import {
+  addComment,
+  getComments
+} from "modules/comment/actions/commentActions";
 
 class Photo extends Page {
   static async getInitialProps({ query, ...p }) {
@@ -35,9 +38,11 @@ class Photo extends Page {
     };
   }
 
+  // one time password
   componentDidMount() {
-    const { getPhotoById, photoId } = this.props;
+    const { getPhotoById, photoId, getComments } = this.props;
     getPhotoById(photoId);
+    getComments(photoId);
   }
 
   setComment = e => {
@@ -117,7 +122,10 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ getPhotoById, addComment }, dispatch);
+  return bindActionCreators(
+    { getPhotoById, addComment, getComments },
+    dispatch
+  );
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Photo);

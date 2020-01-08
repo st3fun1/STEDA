@@ -17,4 +17,19 @@ const addComment = data => dispatch => {
     });
 };
 
-export { addComment };
+const getComments = photoId => dispatch => {
+  console.log("PHOTO ID", photoId);
+  axios
+    .get(`/api/commentsByPhotoId/${photoId}`)
+    .then(response => {
+      dispatch({
+        type: GET_COMMENTS,
+        payload: response.data
+      });
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+};
+
+export { addComment, getComments };

@@ -1,6 +1,5 @@
 .file-uploader-container {
   height: 400px;
-  width: 200px;
   margin-top: 32px;
   overflow: hidden;
 }
@@ -25,6 +24,12 @@
 
 .image-container {
   /* margin-bottom: 32px; */
+  a {
+    display: block;
+    height: auto;
+    width: 200px;
+    margin-bottom: 30px;
+  }
 }
 
 .my-masonry-grid {

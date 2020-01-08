@@ -9,6 +9,14 @@ import { Container, Row, Col } from "reactstrap";
 
 import "./photos-list.scss";
 import Link from "next/link";
+
+const breakpointColumnsObj = {
+  default: 5,
+  1100: 3,
+  700: 2,
+  500: 1
+};
+
 class PhotoList extends Page {
   constructor(props) {
     super(props);
@@ -37,11 +45,12 @@ class PhotoList extends Page {
 
     return (
       <Layout {...this.props} navmenu={false} container={false}>
+        <h1 className="title">Photo Gallery</h1>
         <Container>
-          <h1 className="title">Photo Gallery</h1>
           <Row>
             <Col>
               <Masonry
+                breakpointCols={breakpointColumnsObj}
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
               >
@@ -69,7 +78,4 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators({ getPhotoList }, dispatch);
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PhotoList);
+export default connect(mapStateToProps, mapDispatchToProps)(PhotoList);
