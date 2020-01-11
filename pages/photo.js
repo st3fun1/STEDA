@@ -16,8 +16,11 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
+  ListGroup,
+  ListGroupItem
 } from "reactstrap";
+import Link from "next/link";
 import { getPhotoById } from "modules/photo/actions/photoActions";
 import {
   addComment,
@@ -34,11 +37,11 @@ class Photo extends Page {
   constructor(props) {
     super(props);
     this.state = {
-      comment: null
+      comment: ""
     };
   }
 
-  // one time password
+  // TODO: one time password
   componentDidMount() {
     const { getPhotoById, photoId, getComments } = this.props;
     getPhotoById(photoId);
@@ -52,28 +55,29 @@ class Photo extends Page {
   //TODO:  repeat arrow function
   handleFormSubmit = async e => {
     e.preventDefault();
-    const { photoId, photo, addComment } = this.props;
+    const { photoId, addComment, currentUser } = this.props;
     const reqObj = {
       _csrf: await NextAuth.csrfToken(),
       photoId,
-      userId: photo.userId,
+      userId: currentUser.id,
       comment: this.state.comment
     };
-
-    console.log("req", reqObj);
+    this.setState({
+      comment: ""
+    });
     addComment(reqObj);
   };
 
   render() {
-    const { photo } = this.props;
+    const { photo, comments } = this.props;
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
           <h1 className="title">Photo</h1>
           <Row>
-            <Col md={3}>
+            <Col md={3} sm={12}>
               {photo && (
-                <Card style={{ width: "200px", height: "auto" }}>
+                <Card style={{ height: "auto" }}>
                   <CardImg
                     top
                     width="100%"
@@ -81,12 +85,28 @@ class Photo extends Page {
                     alt={photo.s3_key}
                   />
                   <CardBody>
-                    <CardTitle>Photo of user {photo.userId}</CardTitle>
+                    <CardTitle>
+                      Photo of{" "}
+                      <Link href={`/user/${photo.user._id}`}>
+                        <a href={`/user/${photo.user._id}`}>
+                          {photo.user.name}
+                        </a>
+                      </Link>
+                    </CardTitle>
                   </CardBody>
                 </Card>
               )}
             </Col>
-            <Col md={9}>
+            <Col md={9} sm={12}>
+              <ListGroup>
+                {comments &&
+                  comments.map(item => (
+                    <ListGroupItem key={item._id}>
+                      <b>{item.user ? item.user.name : "Anonymous"}</b>:{" "}
+                      {item.comment}
+                    </ListGroupItem>
+                  ))}
+              </ListGroup>
               <Form onSubmit={this.handleFormSubmit}>
                 <FormGroup>
                   <Label for="comment">Comment</Label>
@@ -114,10 +134,11 @@ Photo.defaultProp = {
   photo: ""
 };
 
-const mapStateToProps = state => {
-  console.log("state", state.photo);
+const mapStateToProps = (state, props) => {
   return {
-    photo: state.photo.photoById
+    photo: state.photo.photoById,
+    comments: state.comment.comments[props.photoId],
+    currentUser: props.session.user
   };
 };
 

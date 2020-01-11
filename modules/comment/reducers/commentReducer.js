@@ -9,7 +9,7 @@ const initialState = {
   comments: {},
   isPending: false,
   isReady: false,
-  erro: false
+  error: false
 };
 
 export default (state = initialState, action) => {
@@ -19,9 +19,12 @@ export default (state = initialState, action) => {
         ...state,
         comments: {
           ...state.comments,
-          [action.payload.commentsId]: state.comments[action.payload.commentsId]
-            ? [...comments[action.payload.commentsId], action.payload]
-            : [action.payload]
+          [action.payload.photoId]: state.comments[action.payload.photoId]
+            ? [
+                ...state.comments[action.payload.photoId],
+                action.payload.comment
+              ]
+            : [action.payload.comment]
         }
       };
     case GET_COMMENTS:
@@ -29,7 +32,7 @@ export default (state = initialState, action) => {
         ...state,
         comments: {
           ...state.comments,
-          [action.payload.commentsId]: action.payload.comments
+          [action.payload.photoId]: action.payload.data
         }
       };
     default:

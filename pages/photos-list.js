@@ -5,8 +5,9 @@ import Page from "../components/page";
 import Layout from "../components/layout";
 import Masonry from "react-masonry-css";
 import { getPhotoList } from "modules/photo/actions/photoActions";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, ListGroupItem, ListGroup } from "reactstrap";
 
+// use withCSS
 import "./photos-list.scss";
 import Link from "next/link";
 
@@ -49,13 +50,15 @@ class PhotoList extends Page {
         <Container>
           <Row>
             <Col>
-              <Masonry
-                breakpointCols={breakpointColumnsObj}
-                className="my-masonry-grid"
-                columnClassName="my-masonry-grid_column"
-              >
-                {childElements}
-              </Masonry>
+              {childElements.length && (
+                <Masonry
+                  breakpointCols={breakpointColumnsObj}
+                  className="my-masonry-grid"
+                  columnClassName="my-masonry-grid_column"
+                >
+                  {childElements}
+                </Masonry>
+              )}
             </Col>
           </Row>
         </Container>

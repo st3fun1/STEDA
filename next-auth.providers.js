@@ -92,6 +92,7 @@ module.exports = () => {
       strategyOptions: {
         consumerKey: process.env.TWITTER_KEY,
         consumerSecret: process.env.TWITTER_SECRET,
+        callbackURL: "http://example.com:9000",
         userProfileURL:
           "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true"
       },

@@ -231,11 +231,12 @@ module.exports = () => {
               email: form.email
             },
             (err, user) => {
-              console.log("user", user);
+              console.log("user", user, form);
               if (err) return reject(err);
               if (!user) return resolve(null);
 
               // Check credentials - e.g. compare bcrypt password hashes
+              console.log("abbb", form.password, user.password);
               if (form.password === user.password) {
                 // If valid, return user object - e.g. { id, name, email }
                 return resolve(user);

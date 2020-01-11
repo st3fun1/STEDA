@@ -1,6 +1,7 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
 let commentCollection;
+let usersCollection;
 if (process.env.MONGO_URI) {
   // Connect to MongoDB Database and return comment collection
 
@@ -12,6 +13,7 @@ if (process.env.MONGO_URI) {
       .shift();
     const db = mongoClient.db(dbName);
     commentCollection = db.collection("comments");
+    usersCollection = db.collection("users");
   });
 }
 
@@ -20,7 +22,7 @@ module.exports = expressApp => {
     throw new Error("expressApp option must be an express server instance");
   }
 
-  // sanitizer
+  // TODO: sanitizer
   expressApp.post("/api/comment", (req, res) => {
     const body = req.body;
     return new Promise((resolve, reject) => {
@@ -34,7 +36,17 @@ module.exports = expressApp => {
           if (err) {
             return reject(err);
           }
-          return resolve(data);
+          usersCollection
+            .find({
+              _id: ObjectId(req.body.userId)
+            })
+            .toArray((err, user) => {
+              if (err) reject(err);
+              resolve({
+                ...data.ops[0],
+                user: user[0]
+              });
+            });
         }
       );
     })
@@ -48,23 +60,44 @@ module.exports = expressApp => {
 
   expressApp.get("/api/commentsByPhotoId/:photoId", (req, res) => {
     const photoId = req.params.photoId;
-    console.log("a: ", photoId);
     return new Promise((resolve, reject) => {
       commentCollection
         .find({
           photoId
         })
-        .limit(10)
+        .limit(5)
         .sort({ $natural: -1 })
-        .toArray((err, data) => {
+        .toArray((err, comments) => {
           if (err) {
             return reject(err);
           }
-          return resolve(data);
+          const userIds = [
+            ...new Set(comments.map(comment => comment.userId))
+          ].map(id => ObjectId(id));
+          usersCollection
+            .find({
+              _id: {
+                $in: userIds
+              }
+            })
+            .toArray((err, users) => {
+              if (err) reject(err);
+              resolve({
+                data: comments.map(comment => ({
+                  ...comment,
+                  user: users.find(
+                    item => item._id.toString() === comment.userId
+                  )
+                }))
+              });
+            });
         });
     })
       .then(data => {
-        res.send(data);
+        res.send({
+          photoId,
+          data: data.data
+        });
       })
       .catch(err => {
         res.status(500).json(err);

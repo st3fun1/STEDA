@@ -4,6 +4,7 @@ const aws = require("aws-sdk");
 const uuid = require("uuid");
 
 let photoCollection;
+let usersCollection;
 if (process.env.MONGO_URI) {
   // Connect to MongoDB Database and return photo collection
 
@@ -15,6 +16,7 @@ if (process.env.MONGO_URI) {
       .shift();
     const db = mongoClient.db(dbName);
     photoCollection = db.collection("photos");
+    usersCollection = db.collection("users");
   });
 }
 
@@ -73,7 +75,22 @@ module.exports = expressApp => {
           if (err) {
             return reject(err);
           }
-          return resolve(data ? data[0] : null);
+          usersCollection
+            .find({
+              _id: ObjectID(data[0].userId)
+            })
+            .toArray((err, userData) => {
+              if (err) {
+                return reject(err);
+              }
+              const photo = {
+                ...data[0],
+                user: userData[0]
+              };
+
+              console.log("PHOTO BY ID \n :", photo);
+              return resolve(photo);
+            });
         });
     })
       .then(data => {
