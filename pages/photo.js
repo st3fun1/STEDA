@@ -21,7 +21,7 @@ import {
   ListGroupItem
 } from "reactstrap";
 import Link from "next/link";
-import { getPhotoById } from "modules/photo/actions/photoActions";
+import { getPhotoById, likeById } from "modules/photo/actions/photoActions";
 import {
   addComment,
   getComments
@@ -68,8 +68,20 @@ class Photo extends Page {
     addComment(reqObj);
   };
 
+  handleLike = async e => {
+    const { likeById, photo } = this.props;
+    const token = await NextAuth.csrfToken();
+    likeById({
+      _csrf: token,
+      photoId: photo._id,
+      userId: photo.userId,
+      liked: photo.liked
+    });
+  };
+
   render() {
     const { photo, comments } = this.props;
+
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
@@ -86,12 +98,23 @@ class Photo extends Page {
                   />
                   <CardBody>
                     <CardTitle>
-                      Photo of{" "}
-                      <Link href={`/user/${photo.user._id}`}>
-                        <a href={`/user/${photo.user._id}`}>
-                          {photo.user.name}
-                        </a>
-                      </Link>
+                      <div className="details">
+                        Photo of{" "}
+                        <Link href={`/user/${photo.user._id}`}>
+                          <a href={`/user/${photo.user._id}`}>
+                            {photo.user.name}
+                          </a>
+                        </Link>
+                      </div>
+                      <div className="actions">
+                        <Button
+                          onClick={this.handleLike}
+                          outline
+                          color="primary"
+                        >
+                          {photo.liked ? "Dislike" : "Like"}
+                        </Button>
+                      </div>
                     </CardTitle>
                   </CardBody>
                 </Card>
@@ -144,7 +167,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    { getPhotoById, addComment, getComments },
+    { getPhotoById, addComment, getComments, likeById },
     dispatch
   );
 };

@@ -1,9 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Label, Input } from "reactstrap";
 import Page from "../components/page";
 import Layout from "../components/layout";
-import Masonry from "react-masonry-css";
 import { NextAuth } from "next-auth/client";
 import uuid from "uuid/v4";
 import ReactDropzone from "react-dropzone";
@@ -14,10 +13,7 @@ import { Button, Form, FormGroup } from "reactstrap";
 import "./photos-list.scss";
 
 const breakpointColumnsObj = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1
+  default: 1
 };
 
 // extract images from Facebook - for the current user
@@ -27,7 +23,7 @@ export default class extends Page {
   constructor(props) {
     super(props);
     this.state = {
-      photos: [],
+      photo: {},
       uploadedFile: React.createRef()
     };
   }
@@ -38,24 +34,18 @@ export default class extends Page {
 
   handlePhotoUpload = e => {
     this.setState({
-      photos: [
-        ...this.state.photos,
-        {
-          src: URL.createObjectURL(this.state.uploadedFile.current.files[0])
-        }
-      ]
+      src: URL.createObjectURL(this.state.uploadedFile.current.files[0])
     });
   };
 
   onDrop = e => {
+    console.log("e: ", e);
     this.setState({
-      photos: [
-        ...this.state.photos,
-        {
-          src: URL.createObjectURL(e[0]),
-          file: e[0]
-        }
-      ]
+      photo: {
+        src: URL.createObjectURL(e[0]),
+        file: e[0],
+        name: this.state.name || e[0].name
+      }
     });
   };
 
@@ -65,9 +55,12 @@ export default class extends Page {
     const csrf = this.props.session.csrfToken;
 
     let formData = new FormData();
-    formData.append(
-      "avatar",
-      this.state.photos[this.state.photos.length - 1].file
+    formData.append("avatar", this.state.photo.file);
+    formData.set(
+      "photo",
+      JSON.stringify({
+        name: this.state.photo.name
+      })
     );
     formData.set("user", JSON.stringify(this.props.session.user));
     const config = {
@@ -80,65 +73,80 @@ export default class extends Page {
       .post("/api/photo/upload", formData, config)
       .then(value => console.log("value", value))
       .catch(err => console.log(err));
+
+    this.setState({
+      photo: {}
+    });
   };
 
   onChange = e => {
     e.persist();
+    console.log("e", e);
     this.setState({
-      photos: [
-        ...this.state.photos,
-        {
-          src: URL.createObjectURL(e.target.files[0]),
-          file: e.target.files[0]
-        }
-      ]
+      photo: {
+        src: URL.createObjectURL(e.target.files[0]),
+        file: e.target.files[0]
+      }
+    });
+  };
+
+  handlePhotoNameChange = e => {
+    this.setState({
+      photo: {
+        ...this.state.photo,
+        name: e.target.value
+      }
     });
   };
 
   render() {
-    const { photos, uploadedFile } = this.state;
-    const childElements = photos.map(function(element) {
-      return (
-        <div className="image-container" key={uuid()}>
-          <img className="image-element" src={element.src} />
-        </div>
-      );
-    });
+    const { photo } = this.state;
+    console.log(":", photo);
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
-          <h1 className="title">Photo Gallery</h1>
-          <Row>
-            <Col>
-              <Masonry
-                className="my-masonry-grid"
-                columnClassName="my-masonry-grid_column"
-              >
-                {childElements}
-              </Masonry>
-            </Col>
-          </Row>
+          <h1 className="title">Upload Photo</h1>
           <Row>
             <Col>
               <Form onSubmit={this.onSubmit}>
                 <FormGroup>
-                  <ReactDropzone onDrop={this.onDrop}>
+                  <Label for="photo-name">Photo name</Label>
+                  <Input
+                    type="text"
+                    name="photoName"
+                    id="photo-name"
+                    value={photo.name || undefined}
+                    onChange={e => this.handlePhotoNameChange(e)}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ReactDropzone
+                    style={{
+                      width: "200px",
+                      border: "2px solid black",
+                      position: "relative"
+                    }}
+                    className="dropzone"
+                    onDrop={this.onDrop}
+                  >
                     {({ getRootProps, getInputProps }) => {
                       return (
                         <div
                           {...getRootProps()}
                           className="file-uploader-container"
                         >
-                          {/* <div className="thumbnail">
-                            <img
-                              src={
-                                this.state.photos[this.state.photos.length - 1]
-                                  .src
-                              }
-                              alt="image"
-                            />
-                          </div> */}
                           <input {...getInputProps()} />
+                          {this.state.photo ? (
+                            <div className="image-container" skey={uuid()}>
+                              <img
+                                className="image-element"
+                                src={photo.src}
+                                style={{ width: "200px" }}
+                              />
+                            </div>
+                          ) : (
+                            <></>
+                          )}
                           <p>
                             Drag 'n' drop some files here, or click to select
                             files
@@ -148,6 +156,7 @@ export default class extends Page {
                     }}
                   </ReactDropzone>
                 </FormGroup>
+                <FormGroup></FormGroup>
                 <FormGroup>
                   <Button>Submit</Button>
                 </FormGroup>

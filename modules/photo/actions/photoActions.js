@@ -4,7 +4,8 @@ import {
   GET_PHOTO_BY_ID,
   UPLOAD_PHOTO,
   DELETE_PHOTO,
-  GET_PHOTOS_BY_USER_ID
+  GET_PHOTOS_BY_USER_ID,
+  UPDATE_LIKE_STATUS
 } from "../reducers/photoTypes";
 
 const getPhotoList = () => dispatch => {
@@ -42,8 +43,7 @@ const getPhotoById = photoId => dispatch => {
 const deletePhotoById = photoID => dispatch => {
   axios
     .get(`/api/photo/${photoId}/delete`)
-    .then(response => {
-      console.log("DELETE PHOTO", response);
+    .then(() => {
       dispatch({
         type: DELETE_PHOTO,
         payload: photoID
@@ -54,4 +54,39 @@ const deletePhotoById = photoID => dispatch => {
     });
 };
 
-export { getPhotoList, getPhotosByUserId, getPhotoById, deletePhotoById };
+const likeById = data => dispatch => {
+  if (!data.liked) {
+    axios
+      .post("/api/photo/like", data)
+      .then(() => {
+        dispatch({
+          type: UPDATE_LIKE_STATUS,
+          payload: true
+        });
+      })
+      .catch(error => {
+        console.log("Like error \n", error);
+      });
+  } else {
+    axios
+      .delete("/api/photo/like", {
+        data
+      })
+      .then(() => {
+        dispatch({
+          type: UPDATE_LIKE_STATUS,
+          payload: false
+        });
+      })
+      .catch(error => {
+        console.log("Dislike error \n", error);
+      });
+  }
+};
+export {
+  getPhotoList,
+  getPhotosByUserId,
+  getPhotoById,
+  deletePhotoById,
+  likeById
+};

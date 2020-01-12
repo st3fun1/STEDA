@@ -2,7 +2,8 @@ import {
   GET_PHOTOS,
   GET_PHOTO_BY_ID,
   UPLOAD_PHOTO,
-  GET_PHOTOS_BY_USER_ID
+  GET_PHOTOS_BY_USER_ID,
+  UPDATE_LIKE_STATUS
 } from "./photoTypes";
 
 const initialState = {
@@ -30,6 +31,14 @@ export default (state = initialState, action) => {
       return {
         ...state,
         photos: [...state.photos, action.payload]
+      };
+    case UPDATE_LIKE_STATUS:
+      return {
+        ...state,
+        photoById: {
+          ...state.photoById,
+          liked: action.payload
+        }
       };
     case GET_PHOTOS_BY_USER_ID:
       return {

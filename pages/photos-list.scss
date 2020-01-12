@@ -27,9 +27,8 @@
   a {
     display: block;
     height: auto;
-    width: 200px;
-    margin-bottom: 30px;
   }
+  margin-bottom: 30px;
 }
 
 .my-masonry-grid {
@@ -44,4 +43,22 @@
   /* padding-left: 32px;  */
   background-clip: padding-box;
   margin-right: 32px;
+}
+
+.photo-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-photo-container {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateX(-50%);
+  padding: 8px;
+  border: 2px solid black;
+}
+
+.grid-container {
+  margin-top: 32px;
 }

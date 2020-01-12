@@ -5,6 +5,7 @@ const uuid = require("uuid");
 
 let photoCollection;
 let usersCollection;
+let likesCollection;
 if (process.env.MONGO_URI) {
   // Connect to MongoDB Database and return photo collection
 
@@ -17,6 +18,8 @@ if (process.env.MONGO_URI) {
     const db = mongoClient.db(dbName);
     photoCollection = db.collection("photos");
     usersCollection = db.collection("users");
+    likesCollection = db.collection("likes");
+    likesCollection.createIndex({ userId: 1, photoId: 1 }, { unique: true });
   });
 }
 
@@ -64,40 +67,84 @@ module.exports = expressApp => {
       });
   });
 
-  expressApp.get("/api/photo/:photoId", (req, res) => {
+  expressApp.get("/api/photo/:photoId", async (req, res) => {
     const photoId = req.params.photoId;
-    return new Promise((resolve, reject) => {
-      photoCollection
+    try {
+      const photo = await photoCollection
         .find({
           _id: ObjectID(photoId)
         })
-        .toArray((err, data) => {
-          if (err) {
-            return reject(err);
-          }
-          usersCollection
-            .find({
-              _id: ObjectID(data[0].userId)
-            })
-            .toArray((err, userData) => {
-              if (err) {
-                return reject(err);
-              }
-              const photo = {
-                ...data[0],
-                user: userData[0]
-              };
+        .toArray();
+      const user = await usersCollection
+        .find({
+          _id: ObjectID(photo[0].userId)
+        })
+        .toArray();
+      console.log({
+        photoId: req.params.photoId,
+        userId: photo[0].userId
+      });
+      const likes = await likesCollection
+        .find({
+          photoId: req.params.photoId,
+          userId: photo[0].userId.toString()
+        })
+        .toArray();
 
-              console.log("PHOTO BY ID \n :", photo);
-              return resolve(photo);
-            });
-        });
+      console.log("likes", likes);
+      res.json({
+        ...photo[0],
+        user: user[0],
+        liked: likes.length
+      });
+    } catch (e) {
+      console.log("E: ", e);
+      res.status(500).json(e);
+    }
+  });
+
+  expressApp.delete("/api/photo/like", (req, res) => {
+    console.log("called");
+    const { photoId, userId } = req.body;
+
+    return new Promise((resolve, reject) => {
+      likesCollection.deleteOne(
+        {
+          photoId,
+          userId
+        },
+        (err, data) => {
+          if (err) reject(err);
+
+          return resolve(data);
+        }
+      );
     })
-      .then(data => {
-        res.json(data);
-      })
+      .then(data => res.json({ deleted: true }))
+      .catch(err => res.status(500).json(err));
+  });
+
+  expressApp.post("/api/photo/like", (req, res) => {
+    console.log("liked called");
+    const { photoId, userId } = req.body;
+
+    return new Promise((resolve, reject) => {
+      likesCollection.insertOne(
+        {
+          photoId,
+          userId
+        },
+        (err, data) => {
+          if (err) reject(err);
+
+          return resolve(data);
+        }
+      );
+    })
+      .then(data => res.json({ inserted: true }))
       .catch(err => {
-        return res.status(500);
+        console.log("LIKE ERRO: ", err);
+        res.status(500);
       });
   });
 
@@ -109,6 +156,8 @@ module.exports = expressApp => {
       console.log("Invalid JSON");
     }
 
+    console.log("req", req.body);
+
     const s3 = new aws.S3({
       accessKeyId: process.env.AMAZON_S3_ID,
       secretAccessKey: process.env.AMAZON_S3_SECRET,
@@ -116,7 +165,7 @@ module.exports = expressApp => {
     });
 
     if (req.file) {
-      const key = uuid() + "-" + req.file.originalname;
+      const key = userData.id + "-" + uuid() + "-" + req.file.originalname;
 
       const params = {
         Bucket: process.env.BUCKET_NAME,
@@ -131,7 +180,7 @@ module.exports = expressApp => {
           return res.status(500).json({ error: true, Message: err });
         } else {
           const newUploadedFile = {
-            description: req.file.originalname,
+            description: req.body.photo.name || req.file.originalname,
             fileLink: process.env.AMAZON_S3_FILE_URL + key,
             location: data.Location,
             s3_key: key,
@@ -139,6 +188,7 @@ module.exports = expressApp => {
           };
 
           photoCollection.insertOne(newUploadedFile, (err, data) => {
+            console.log("upload photo success", data);
             if (err) res.status(500).json(err);
 
             return res.send(newUploadedFile);
