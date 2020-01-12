@@ -69,12 +69,12 @@ class Photo extends Page {
   };
 
   handleLike = async e => {
-    const { likeById, photo } = this.props;
+    const { likeById, photo, session } = this.props;
     const token = await NextAuth.csrfToken();
     likeById({
       _csrf: token,
       photoId: photo._id,
-      userId: photo.userId,
+      userId: session.user.id,
       liked: photo.liked
     });
   };

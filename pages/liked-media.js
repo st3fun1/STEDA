@@ -6,6 +6,7 @@ import Masonry from "react-masonry-css";
 import Layout from "../components/layout";
 import { Container, Row, Col } from "reactstrap";
 
+import "./liked-media.scss";
 import { getLikedPhotos } from "modules/photo/actions/photoActions";
 
 import Link from "next/link";
@@ -25,22 +26,26 @@ class LikedMedia extends Page {
 
   render() {
     const { photos, session } = this.props;
-    const childElements = photos.map(function(element) {
-      return (
-        element.location && (
-          <div className="image-container" key={element._id}>
-            <Link href={`/photo/${element._id}`}>
-              <a href={`/photo/${element._id}`}>
-                <img className="image-element" src={element.location} />
-              </a>
-            </Link>
-            <div title={element.description} className="photo-description">
-              {element.description}
+    console.log("photos", photos);
+    const childElements = photos
+      .map(item => item.photo)
+      .map(function(element) {
+        console.log("e", element);
+        return (
+          element.location && (
+            <div className="image-container" key={element._id}>
+              <Link href={`/photo/${element._id}`}>
+                <a href={`/photo/${element._id}`}>
+                  <img className="image-element" src={element.location} />
+                </a>
+              </Link>
+              <div title={element.description} className="photo-description">
+                {element.description}
+              </div>
             </div>
-          </div>
-        )
-      );
-    });
+          )
+        );
+      });
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>

@@ -1,0 +1,64 @@
+.file-uploader-container {
+  height: 400px;
+  margin-top: 32px;
+  overflow: hidden;
+}
+.thumbnail {
+  height: 70%;
+  width: auto;
+  overflow: hidden;
+}
+.thumbnail > img {
+  width: 100%;
+  height: auto;
+}
+.title {
+  text-align: center;
+  padding: 16px 0px;
+}
+.image-element {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-container {
+  /* margin-bottom: 32px; */
+  a {
+    display: block;
+    height: auto;
+  }
+  margin-bottom: 30px;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  /* margin-left: -32px;  */
+  width: auto;
+  min-height: 400px;
+}
+.my-masonry-grid_column {
+  /* padding-left: 32px;  */
+  background-clip: padding-box;
+  margin-right: 32px;
+}
+
+.photo-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-photo-container {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateX(-50%);
+  padding: 8px;
+  border: 2px solid black;
+}
+
+.grid-container {
+  margin-top: 32px;
+}

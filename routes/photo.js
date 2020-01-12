@@ -69,6 +69,7 @@ module.exports = expressApp => {
   });
 
   expressApp.get("/api/photo/:photoId", async (req, res) => {
+    console.log("req", req.session);
     const photoId = req.params.photoId;
     try {
       const photo = await photoCollection
@@ -81,14 +82,11 @@ module.exports = expressApp => {
           _id: ObjectID(photo[0].userId)
         })
         .toArray();
-      console.log({
-        photoId: req.params.photoId,
-        userId: photo[0].userId
-      });
+      // TODO: for current user
       const likes = await likesCollection
         .find({
           photoId: req.params.photoId,
-          userId: photo[0].userId.toString()
+          userId: req.session.passport.user
         })
         .toArray();
 
@@ -132,8 +130,8 @@ module.exports = expressApp => {
     return new Promise((resolve, reject) => {
       likesCollection.insertOne(
         {
-          photoId,
-          userId
+          photoId: ObjectID(photoId),
+          userId: ObjectID(userId)
         },
         (err, data) => {
           if (err) reject(err);
@@ -155,12 +153,42 @@ module.exports = expressApp => {
 
     try {
       const likedPhotos = await likesCollection
-        .find({
-          userId
-        })
+        .aggregate([
+          {
+            $match: {
+              userId: ObjectID(userId)
+            }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "user"
+            }
+          },
+          {
+            $lookup: {
+              from: "photos",
+              localField: "photoId",
+              foreignField: "_id",
+              as: "photo"
+            }
+          },
+          {
+            $project: {
+              photo: {
+                $arrayElemAt: ["$photo", 0]
+              },
+              user: {
+                $arrayElemAt: ["$user", 0]
+              }
+            }
+          }
+        ])
         .toArray();
-      console.log("LIKED PHOTOS: ", likedPhotos);
-      res.send({ likedPhotos: likedPhotos || [] });
+      console.log("liked", likedPhotos);
+      res.send({ likedPhotos });
     } catch (e) {
       res.send(500).json(e);
     }
