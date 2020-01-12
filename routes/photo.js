@@ -9,6 +9,7 @@ let likesCollection;
 if (process.env.MONGO_URI) {
   // Connect to MongoDB Database and return photo collection
 
+  // TODO: create general db service
   MongoClient.connect(process.env.MONGO_URI, (err, mongoClient) => {
     if (err) throw new Error(err);
     const dbName = process.env.MONGO_URI.split("/")
@@ -146,6 +147,23 @@ module.exports = expressApp => {
         console.log("LIKE ERRO: ", err);
         res.status(500);
       });
+  });
+
+  expressApp.get("/api/liked-photos/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    console.log("user", userId);
+
+    try {
+      const likedPhotos = await likesCollection
+        .find({
+          userId
+        })
+        .toArray();
+      console.log("LIKED PHOTOS: ", likedPhotos);
+      res.send({ likedPhotos: likedPhotos || [] });
+    } catch (e) {
+      res.send(500).json(e);
+    }
   });
 
   expressApp.post("/api/photo/upload", (req, res) => {

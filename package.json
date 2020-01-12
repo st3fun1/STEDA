@@ -39,6 +39,7 @@
     "raw-loader": "^3.1.0",
     "react": "^16.10.1",
     "react-bootstrap-table": "^4.3.1",
+    "react-cookies": "^0.1.1",
     "react-dom": "^16.10.1",
     "react-dropzone": "^10.1.9",
     "react-masonry-css": "^1.0.12",

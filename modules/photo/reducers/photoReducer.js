@@ -3,7 +3,8 @@ import {
   GET_PHOTO_BY_ID,
   UPLOAD_PHOTO,
   GET_PHOTOS_BY_USER_ID,
-  UPDATE_LIKE_STATUS
+  UPDATE_LIKE_STATUS,
+  GET_LIKED_PHOTOS
 } from "./photoTypes";
 
 const initialState = {
@@ -12,7 +13,8 @@ const initialState = {
   photoById: null,
   isPending: false,
   isReady: false,
-  error: false
+  error: false,
+  likedPhotos: []
 };
 
 export default (state = initialState, action) => {
@@ -44,6 +46,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         photosByUserId: action.payload
+      };
+    case GET_LIKED_PHOTOS:
+      return {
+        ...state,
+        likedPhotos: action.payload
       };
     default:
       return state;

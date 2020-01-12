@@ -80,7 +80,7 @@ class Photo extends Page {
   };
 
   render() {
-    const { photo, comments } = this.props;
+    const { photo, comments, session } = this.props;
 
     return (
       <Layout {...this.props} navmenu={false} container={false}>
@@ -107,13 +107,15 @@ class Photo extends Page {
                         </Link>
                       </div>
                       <div className="actions">
-                        <Button
-                          onClick={this.handleLike}
-                          outline
-                          color="primary"
-                        >
-                          {photo.liked ? "Dislike" : "Like"}
-                        </Button>
+                        {photo.user._id !== session.user.id && (
+                          <Button
+                            onClick={this.handleLike}
+                            outline
+                            color="primary"
+                          >
+                            {photo.liked ? "Dislike" : "Like"}
+                          </Button>
+                        )}
                       </div>
                     </CardTitle>
                   </CardBody>

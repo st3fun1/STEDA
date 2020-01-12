@@ -2,7 +2,7 @@ import { Provider } from "react-redux";
 import App from "next/app";
 import withRedux from "next-redux-wrapper";
 import { initStore } from "state";
-export default withRedux(initStore, { debug: false })(
+export default withRedux(initStore, { debug: true })(
   class MyApp extends App {
     static async getInitialProps({ Component, ctx }) {
       const pageProps = Component.getInitialProps

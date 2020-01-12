@@ -1,11 +1,13 @@
 import axios from "axios";
+
 import {
   GET_PHOTOS,
   GET_PHOTO_BY_ID,
   UPLOAD_PHOTO,
   DELETE_PHOTO,
   GET_PHOTOS_BY_USER_ID,
-  UPDATE_LIKE_STATUS
+  UPDATE_LIKE_STATUS,
+  GET_LIKED_PHOTOS
 } from "../reducers/photoTypes";
 
 const getPhotoList = () => dispatch => {
@@ -83,10 +85,25 @@ const likeById = data => dispatch => {
       });
   }
 };
+
+const getLikedPhotos = userId => async dispatch => {
+  try {
+    const photos = await axios.get(`/api/liked-photos/${userId}`);
+    console.log("CLIENT", photos);
+    dispatch({
+      type: GET_LIKED_PHOTOS,
+      payload: photos.data.likedPhotos
+    });
+  } catch (e) {
+    console.log("GET LIKED PHOTOS ERROR \n", e);
+  }
+};
+
 export {
   getPhotoList,
   getPhotosByUserId,
   getPhotoById,
   deletePhotoById,
-  likeById
+  likeById,
+  getLikedPhotos
 };

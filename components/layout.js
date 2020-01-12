@@ -100,6 +100,13 @@ export default class extends React.Component {
               navbar
             >
               <NavItem>
+                <Link href="/">
+                  <a href="/" className="dropdown-item">
+                    All Photos
+                  </a>
+                </Link>
+              </NavItem>
+              <NavItem>
                 <Link href="/user-list">
                   <a href="/user-list" className="dropdown-item">
                     Users List
@@ -107,12 +114,19 @@ export default class extends React.Component {
                 </Link>
               </NavItem>
               <NavItem>
-                <Link href="/photos-list">
-                  <a href="/photos-list" className="dropdown-item">
-                    Photo List
+                <Link href="/liked-media">
+                  <a href="/liked-media" className="dropdown-item">
+                    Liked Media
                   </a>
                 </Link>
               </NavItem>
+              <Nav Item>
+                <Link href="/upload-photo">
+                  <a href="/upload-photo" className="dropdown-item">
+                    Upload
+                  </a>
+                </Link>
+              </Nav>
             </Nav>
             <UserMenu
               session={this.props.session}

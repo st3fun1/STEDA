@@ -1,6 +1,7 @@
 import axios from "axios";
+import cookie from "react-cookies";
 import { GET_USERS_LIST, GET_USER } from "../reducers/userTypes";
-import { Router } from "next/router";
+import Router from "next/router";
 
 const getUserList = () => dispatch => {
   axios.get("/api/user-list").then(response => {
@@ -31,8 +32,7 @@ const signUp = data => dispatch => {
         payload: response.data.user
       });
       //Save current URL so user is redirected back here after signing in
-      const cookies = new Cookies();
-      cookies.set("redirect_url", window.location.pathname, { path: "/" });
+      cookie.save("redirect_url", window.location.pathname, { path: "/" });
       Router.push("/");
     })
     .catch(err => {
