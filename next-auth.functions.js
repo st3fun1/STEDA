@@ -52,6 +52,8 @@ const MongoObjectId = process.env.MONGO_URI
       return id;
     };
 
+const bcrypt = require("bcrypt");
+
 // Use Node Mailer for email sign in
 const nodemailer = require("nodemailer");
 const nodemailerSmtpTransport = require("nodemailer-smtp-transport");
@@ -222,7 +224,6 @@ module.exports = () => {
       //
       // To disable this option, do not set signin (or set it to null).
       signIn: ({ form, req }) => {
-        console.log("form", form);
         return new Promise((resolve, reject) => {
           // Should validate credentials (e.g. hash password, compare 2FA token
           // etc) and return a valid user object from a database.
@@ -230,18 +231,17 @@ module.exports = () => {
             {
               email: form.email
             },
-            (err, user) => {
-              console.log("user", user, form);
+            async (err, user) => {
               if (err) return reject(err);
               if (!user) return resolve(null);
 
               // Check credentials - e.g. compare bcrypt password hashes
-              console.log("abbb", form.password, user.password);
-              if (form.password === user.password) {
-                // If valid, return user object - e.g. { id, name, email }
+              try {
+                const hash = await bcrypt.compare(form.password, user.password);
+                console.log("signIn", hash);
                 return resolve(user);
-              } else {
-                // If invalid, return null
+              } catch (e) {
+                console.log("e: ", e, form.password, user.password);
                 return resolve(null);
               }
             }

@@ -1,5 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
+const bcrypt = require("bcrypt");
 
 let userCollection;
 
@@ -22,7 +23,6 @@ module.exports = expressApp => {
 
   expressApp.post("/auth/signup", async (req, res) => {
     const { signupEmail, signupPassword, signupRepeatPassword } = req.body;
-    console.log("sign up", req.body);
     if (
       signupEmail &&
       signupPassword &&
@@ -33,17 +33,24 @@ module.exports = expressApp => {
           email: signupEmail
         })
         .toArray();
-
       if (userFound.length) {
         // Conflict
         res.status(409).json({ error: "User already exists" });
       } else {
+        let hashedPassword;
+        try {
+          const salt = await bcrypt.genSalt(10);
+          hashedPassword = await bcrypt.hash(signupPassword, salt);
+        } catch (e) {
+          return res.status(500).json({ error: "Internal server error." });
+        }
+
         try {
           const userInserted = await userCollection
             .insertOne({
               email: signupEmail,
               name: signupEmail,
-              password: signupPassword
+              password: hashedPassword
             })
             .toArray();
           res.json(userInserted);
