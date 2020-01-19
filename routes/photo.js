@@ -32,7 +32,6 @@ module.exports = expressApp => {
   expressApp.get("/api/photo/list", (req, res) => {
     return new Promise((resolve, reject) => {
       photoCollection.find({}).toArray((err, data) => {
-        console.log("data: ", data);
         if (err) {
           return reject(err);
         }
@@ -70,7 +69,6 @@ module.exports = expressApp => {
   });
 
   expressApp.get("/api/photo/:photoId", async (req, res) => {
-    console.log("req", req.session);
     const photoId = req.params.photoId;
     try {
       const photo = await photoCollection
@@ -83,31 +81,25 @@ module.exports = expressApp => {
           _id: ObjectID(photo[0].userId)
         })
         .toArray();
-
-      console.log("user: ", user, req.session);
       // TODO: for current user
-      let likes = [];
-      if (req.session && req.session.passport) {
-        likes = await likesCollection.find({
+      const likes = await likesCollection
+        .find({
           photoId: req.params.photoId,
           userId: req.session.passport.user
-        })``.toArray();
-      }
+        })
+        .toArray();
 
-      console.log("likes", likes, photo);
       res.json({
         ...photo[0],
         user: user[0],
         liked: likes.length
       });
     } catch (e) {
-      console.log("E: ", e);
       res.status(500).json(e);
     }
   });
 
   expressApp.delete("/api/photo/like", (req, res) => {
-    console.log("called");
     const { photoId, userId } = req.body;
 
     return new Promise((resolve, reject) => {
@@ -128,7 +120,6 @@ module.exports = expressApp => {
   });
 
   expressApp.post("/api/photo/like", (req, res) => {
-    console.log("liked called");
     const { photoId, userId } = req.body;
 
     return new Promise((resolve, reject) => {
@@ -146,14 +137,12 @@ module.exports = expressApp => {
     })
       .then(data => res.json({ inserted: true }))
       .catch(err => {
-        console.log("LIKE ERRO: ", err);
         res.status(500);
       });
   });
 
   expressApp.get("/api/liked-photos/:userId", async (req, res) => {
     const userId = req.params.userId;
-    console.log("user", userId);
 
     try {
       const likedPhotos = await likesCollection
@@ -191,7 +180,6 @@ module.exports = expressApp => {
           }
         ])
         .toArray();
-      console.log("liked", likedPhotos);
       res.send({ likedPhotos });
     } catch (e) {
       res.send(500).json(e);
@@ -200,7 +188,20 @@ module.exports = expressApp => {
 
   expressApp.post("/api/media/upload", async (req, res) => {
     // url regex + sanitizer + find if safe
-    if (req.media) {
+    if (req.body.fileLink) {
+      const { description, userId, fileLink } = req.body;
+      try {
+        const inserted = await photoCollection.insertOne({
+          description,
+          userId: ObjectID(userId),
+          fileLink
+        });
+        res.json(inserted);
+      } catch (e) {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    } else {
+      res.status(403).json({ error: "Invalid operation" });
     }
   });
 
@@ -209,7 +210,6 @@ module.exports = expressApp => {
     try {
       userData = JSON.parse(req.body.user);
     } catch (e) {
-      console.log("Invalid JSON");
       return res.status(500).json({ error: "Internal server error" });
     }
 

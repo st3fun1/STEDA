@@ -32,11 +32,14 @@ class PhotoList extends Page {
     const { photos } = this.props;
     const childElements = photos.map(function(element) {
       return (
-        element.location && (
+        (element.fileLink || element.location) && (
           <div className="image-container" key={element._id}>
             <Link href={`/photo/${element._id}`}>
               <a href={`/photo/${element._id}`}>
-                <img className="image-element" src={element.location} />
+                <img
+                  className="image-element"
+                  src={element.s3_key ? element.location : element.fileLink}
+                />
               </a>
             </Link>
             <div title={element.description} className="photo-description">

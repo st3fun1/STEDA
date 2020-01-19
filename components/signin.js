@@ -180,7 +180,6 @@ class SignInModal extends React.Component {
               </Form>
             </Col>
           </Row>
-
           <Row>
             <Col xs={12}>
               <p>or register</p>

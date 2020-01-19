@@ -25,7 +25,8 @@ export default class extends Page {
     this.state = {
       photo: {},
       uploadedFile: React.createRef(),
-      media: null
+      media: null,
+      description: ""
     };
   }
 
@@ -45,39 +46,51 @@ export default class extends Page {
       photo: {
         src: URL.createObjectURL(e[0]),
         file: e[0],
-        name: this.state.name || e[0].name
+        name: description || e[0].name
       }
     });
   };
 
-  onSubmit = e => {
+  onSubmit = async e => {
+    const { media, photo, description } = this.state;
+    const { session } = this.props;
     e.preventDefault();
+    if (media) {
+      axios
+        .post("/api/media/upload", {
+          description,
+          userId: session.user.id,
+          fileLink: media,
+          _csrf: await NextAuth.csrfToken()
+        })
+        .then(value => console.log("value", value))
+        .catch(err => console.log(err));
+    } else if (photo) {
+      let formData = new FormData();
+      formData.append("avatar", photo.file);
+      formData.set(
+        "photo",
+        JSON.stringify({
+          name: description
+        })
+      );
+      formData.set("user", JSON.stringify(session.user));
+      const config = {
+        headers: {
+          "Content-Type":
+            'multipart/form-data; charset=utf-8; boundary="another cool boundary"'
+        }
+      };
+      // TODO: action
+      axios
+        .post("/api/photo/upload", formData, config)
+        .then(value => console.log("value", value))
+        .catch(err => console.log(err));
 
-    const csrf = this.props.session.csrfToken;
-
-    let formData = new FormData();
-    formData.append("avatar", this.state.photo.file);
-    formData.set(
-      "photo",
-      JSON.stringify({
-        name: this.state.photo.name
-      })
-    );
-    formData.set("user", JSON.stringify(this.props.session.user));
-    const config = {
-      headers: {
-        "Content-Type":
-          'multipart/form-data; charset=utf-8; boundary="another cool boundary"'
-      }
-    };
-    axios
-      .post("/api/photo/upload", formData, config)
-      .then(value => console.log("value", value))
-      .catch(err => console.log(err));
-
-    this.setState({
-      photo: {}
-    });
+      this.setState({
+        photo: {}
+      });
+    }
   };
 
   onChange = e => {
@@ -91,36 +104,64 @@ export default class extends Page {
     });
   };
 
-  handlePhotoNameChange = e => {
-    this.setState({
-      photo: {
-        ...this.state.photo,
-        name: e.target.value
-      }
+  testImage = (url, timeoutT) => {
+    return new Promise(function(resolve, reject) {
+      var timeout = timeoutT || 5000;
+      var timer,
+        img = new Image();
+      img.onerror = img.onabort = function() {
+        clearTimeout(timer);
+        reject("error");
+      };
+      img.onload = function() {
+        clearTimeout(timer);
+        resolve("success");
+      };
+      timer = setTimeout(function() {
+        // reset .src to invalid URL so it stops previous
+        // loading, but doesn't trigger new load
+        img.src = "//!!!!/test.jpg";
+        reject("timeout");
+      }, timeout);
+      img.src = url;
     });
   };
 
-  handleMediaChange = e => {
-    console.log("e", e.target.value);
+  handleDescriptionChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  handleMediaChange = async e => {
+    if (e.target) {
+      const value = e.target.value;
+      const name = e.target.name;
+      const imageTest = await this.testImage(value);
+      console.log("test", imageTest);
+      this.setState({
+        [name]: value
+      });
+    }
   };
 
   render() {
-    const { photo, media } = this.state;
+    const { photo, media, description } = this.state;
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
-          <h1 className="title">Upload Photo</h1>
+          <h1 className="title">Share something</h1>
           <Row>
             <Col>
               <Form onSubmit={this.onSubmit}>
                 <FormGroup>
-                  <Label for="photo-name">Photo name</Label>
+                  <Label for="description">Description</Label>
                   <Input
                     type="text"
-                    name="photoName"
-                    id="photo-name"
-                    value={photo.name || undefined}
-                    onChange={e => this.handlePhotoNameChange(e)}
+                    name="description"
+                    id="description"
+                    value={description}
+                    onChange={e => this.handleDescriptionChange(e)}
                   />
                 </FormGroup>
                 <FormGroup>
