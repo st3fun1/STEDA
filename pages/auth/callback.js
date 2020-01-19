@@ -1,6 +1,5 @@
 import React from "react";
 import Head from "next/head";
-import Link from "next/link";
 import Router from "next/router";
 import Cookies from "universal-cookie";
 import { NextAuth } from "next-auth/client";
@@ -35,12 +34,17 @@ export default class extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     // Get latest session data after rendering on client *then* redirect.
     // The ensures client state is always updated after signing in or out.
     // (That's why we use a callback page)
-    const session = await NextAuth.init({ force: true });
-    Router.replace("/").then(called => console.log(called));
+    NextAuth.init({ force: true }).then(session => {
+      const { redirectTo } = this.props;
+      if (redirectTo && session) {
+        console.log("aa", redirectTo);
+        Router.replace(redirectTo);
+      }
+    });
   }
 
   render() {

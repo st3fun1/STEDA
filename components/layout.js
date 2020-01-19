@@ -123,7 +123,7 @@ export default class extends React.Component {
               <Nav Item>
                 <Link href="/upload-photo">
                   <a href="/upload-photo" className="dropdown-item">
-                    Upload
+                    Upload files or share link
                   </a>
                 </Link>
               </Nav>

@@ -20,31 +20,37 @@ module.exports = expressApp => {
     throw new Error("expressApp option must be an express server instance");
   }
 
-  expressApp.post("/auth/signup", (req, res) => {
+  expressApp.post("/auth/signup", async (req, res) => {
     const { signupEmail, signupPassword, signupRepeatPassword } = req.body;
-    console.log("body", req.body);
+    console.log("sign up", req.body);
     if (
       signupEmail &&
       signupPassword &&
       signupPassword === signupRepeatPassword
     ) {
-      userCollection.insertOne(
-        {
-          email: signupEmail,
-          name: signupEmail,
-          password: signupPassword
-        },
-        (err, result) => {
-          console.log("response", result.ops[0], err);
-          if (err) {
-            res.status(500).json({ error: "Invalid form data." });
-          }
+      const userFound = await userCollection
+        .find({
+          email: signupEmail
+        })
+        .toArray();
 
-          if (result) {
-            res.json(result.ops[0]);
-          }
+      if (userFound.length) {
+        // Conflict
+        res.status(409).json({ error: "User already exists" });
+      } else {
+        try {
+          const userInserted = await userCollection
+            .insertOne({
+              email: signupEmail,
+              name: signupEmail,
+              password: signupPassword
+            })
+            .toArray();
+          res.json(userInserted);
+        } catch (e) {
+          res.status(500).json({ error: e });
         }
-      );
+      }
     } else {
       res.status(500).json({ error: "Invalid form data." });
     }

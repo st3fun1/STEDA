@@ -32,6 +32,7 @@ module.exports = expressApp => {
   expressApp.get("/api/photo/list", (req, res) => {
     return new Promise((resolve, reject) => {
       photoCollection.find({}).toArray((err, data) => {
+        console.log("data: ", data);
         if (err) {
           return reject(err);
         }
@@ -194,15 +195,20 @@ module.exports = expressApp => {
     }
   });
 
+  expressApp.post("/api/media/upload", async (req, res) => {
+    // url regex + sanitizer + find if safe
+    if (req.media) {
+    }
+  });
+
   expressApp.post("/api/photo/upload", (req, res) => {
     let userData = null;
     try {
       userData = JSON.parse(req.body.user);
     } catch (e) {
       console.log("Invalid JSON");
+      return res.status(500).json({ error: "Internal server error" });
     }
-
-    console.log("req", req.body);
 
     const s3 = new aws.S3({
       accessKeyId: process.env.AMAZON_S3_ID,
@@ -225,8 +231,14 @@ module.exports = expressApp => {
         if (err) {
           return res.status(500).json({ error: true, Message: err });
         } else {
+          let photoName;
+          try {
+            photoName = JSON.parse(req.body.photo).name;
+          } catch (e) {
+            photoName = req.file.originalname;
+          }
           const newUploadedFile = {
-            description: req.body.photo.name || req.file.originalname,
+            description: photoName,
             fileLink: process.env.AMAZON_S3_FILE_URL + key,
             location: data.Location,
             s3_key: key,
@@ -234,7 +246,6 @@ module.exports = expressApp => {
           };
 
           photoCollection.insertOne(newUploadedFile, (err, data) => {
-            console.log("upload photo success", data);
             if (err) res.status(500).json(err);
 
             return res.send(newUploadedFile);

@@ -5,6 +5,7 @@ import Page from "../components/page";
 import Masonry from "react-masonry-css";
 import Layout from "../components/layout";
 import { Container, Row, Col } from "reactstrap";
+import Router from "next/router";
 
 import "./liked-media.scss";
 import { getLikedPhotos } from "modules/photo/actions/photoActions";
@@ -21,7 +22,13 @@ const breakpointColumnsObj = {
 class LikedMedia extends Page {
   componentDidMount() {
     const { getPhotoList, session } = this.props;
-    getPhotoList(session.user.id);
+    // TODO - auth hoc
+    if (!session.user) {
+      console.log("withSession");
+      Router.push("/");
+    } else {
+      getPhotoList(session.user.id);
+    }
   }
 
   render() {

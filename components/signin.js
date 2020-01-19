@@ -120,10 +120,11 @@ class SignInModal extends React.Component {
             style={{ marginTop: 10, marginBottom: 30 }}
           >{`If you don't have an account, one will be created when you sign in.`}</p>
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={12}>
               <SignInButtons providers={this.props.providers} />
             </Col>
-            <Col xs={12} md={6}>
+            <p>or</p>
+            <Col xs={12}>
               <Form
                 id="signin"
                 method="post"
@@ -179,10 +180,11 @@ class SignInModal extends React.Component {
               </Form>
             </Col>
           </Row>
+
           <Row>
-            <Col>or</Col>
-          </Row>
-          <Row>
+            <Col xs={12}>
+              <p>or register</p>
+            </Col>
             <Col>
               <Col xs={12} md={6}>
                 <Form

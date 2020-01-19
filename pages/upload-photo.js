@@ -24,7 +24,8 @@ export default class extends Page {
     super(props);
     this.state = {
       photo: {},
-      uploadedFile: React.createRef()
+      uploadedFile: React.createRef(),
+      media: null
     };
   }
 
@@ -99,9 +100,12 @@ export default class extends Page {
     });
   };
 
+  handleMediaChange = e => {
+    console.log("e", e.target.value);
+  };
+
   render() {
-    const { photo } = this.state;
-    console.log(":", photo);
+    const { photo, media } = this.state;
     return (
       <Layout {...this.props} navmenu={false} container={false}>
         <Container>
@@ -156,7 +160,19 @@ export default class extends Page {
                     }}
                   </ReactDropzone>
                 </FormGroup>
-                <FormGroup></FormGroup>
+                {!photo.src && (
+                  <FormGroup>
+                    <p>or</p>
+                    <Label for="photo-name">Other media link</Label>
+                    <Input
+                      type="url"
+                      name="media"
+                      id="media"
+                      value={media}
+                      onChange={e => this.handleMediaChange(e)}
+                    />
+                  </FormGroup>
+                )}
                 <FormGroup>
                   <Button>Submit</Button>
                 </FormGroup>
