@@ -83,15 +83,18 @@ module.exports = expressApp => {
           _id: ObjectID(photo[0].userId)
         })
         .toArray();
+
+      console.log("user: ", user, req.session);
       // TODO: for current user
-      const likes = await likesCollection
-        .find({
+      let likes = [];
+      if (req.session && req.session.passport) {
+        likes = await likesCollection.find({
           photoId: req.params.photoId,
           userId: req.session.passport.user
-        })
-        .toArray();
+        })``.toArray();
+      }
 
-      console.log("likes", likes);
+      console.log("likes", likes, photo);
       res.json({
         ...photo[0],
         user: user[0],

@@ -100,23 +100,25 @@ class Photo extends Page {
                     <CardTitle>
                       <div className="details">
                         Photo of{" "}
-                        <Link href={`/user/${photo.user._id}`}>
-                          <a href={`/user/${photo.user._id}`}>
+                        <Link href={`/user/${photo.userId}`}>
+                          <a href={`/user/${photo.userId}`}>
                             {photo.user.name}
                           </a>
                         </Link>
                       </div>
-                      <div className="actions">
-                        {photo.user._id !== session.user.id && (
-                          <Button
-                            onClick={this.handleLike}
-                            outline
-                            color="primary"
-                          >
-                            {photo.liked ? "Dislike" : "Like"}
-                          </Button>
-                        )}
-                      </div>
+                      {session.user && (
+                        <div className="actions">
+                          {photo.userId !== session.user.id && (
+                            <Button
+                              onClick={this.handleLike}
+                              outline
+                              color="primary"
+                            >
+                              {photo.liked ? "Dislike" : "Like"}
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </CardTitle>
                   </CardBody>
                 </Card>
