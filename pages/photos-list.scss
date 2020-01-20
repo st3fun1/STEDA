@@ -24,6 +24,8 @@
 
 .image-container {
   /* margin-bottom: 32px; */
+  border: 2px solid black;
+  padding: 7px;
   a {
     display: block;
     height: auto;
@@ -48,15 +50,24 @@
 .photo-description {
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
+  font-weight: bold;
+  color: lightskyblue;
 }
 
 .upload-photo-container {
   position: absolute;
   top: 50%;
   right: 0;
-  transform: translateX(-50%);
   padding: 8px;
-  border: 2px solid black;
+  border: 2px solid lightskyblue;
+  transform: rotate(90deg) translateX(-50%);
+  a {
+    text-decoration: none;
+    color: lightskyblue;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
 }
 
 .grid-container {

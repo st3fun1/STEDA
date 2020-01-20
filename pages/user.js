@@ -14,6 +14,13 @@ import { getPhotosByUserId } from "modules/photo/actions/photoActions";
 import "./photos-list.scss";
 import { NextAuth } from "next-auth/client";
 
+const breakpointColumnsObj = {
+  default: 5,
+  1100: 3,
+  700: 2,
+  500: 1
+};
+
 class User extends Page {
   constructor(props) {
     super(props);
@@ -32,13 +39,19 @@ class User extends Page {
     const { photos } = this.props;
     const childElements = photos.map(element => {
       return (
-        element.location && (
+        (element.fileLink || element.location) && (
           <div className="image-container" key={uuid()}>
             <Link href={`/photo/${element._id}`}>
               <a href={`/photo/${element._id}`}>
-                <img className="image-element" src={element.location} />
+                <img
+                  className="image-element"
+                  src={element.s3_key ? element.location : element.fileLink}
+                />
               </a>
             </Link>
+            <div title={element.description} className="photo-description">
+              {element.description}
+            </div>
           </div>
         )
       );
@@ -52,6 +65,7 @@ class User extends Page {
           <Row>
             <Col>
               <Masonry
+                breakpointCols={breakpointColumnsObj}
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
               >

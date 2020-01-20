@@ -136,8 +136,13 @@ module.exports = () => {
       //
       // You can use this to capture profile.avatar, profile.location, etc.
       insert: (user, oAuthProfile) => {
+        console.log("user", user, oAuthProfile);
+        const finalUser = {
+          ...user,
+          avatar: oAuthProfile.photos[0] ? oAuthProfile.photos[0].value : null
+        };
         return new Promise((resolve, reject) => {
-          usersCollection.insert(user, (err, response) => {
+          usersCollection.insert(finalUser, (err, response) => {
             if (err) return reject(err);
 
             // Mongo Client automatically adds an id to an inserted object, but
@@ -182,6 +187,7 @@ module.exports = () => {
       },
       // Seralize turns the value of the ID key from a User object
       serialize: user => {
+        console.log("user", user);
         // Supports serialization from Mongo Object *and* deserialize() object
         if (user.id) {
           // Handle responses from deserialize()
@@ -203,12 +209,13 @@ module.exports = () => {
 
             // If user not found (e.g. account deleted) return null object
             if (!user) return resolve(null);
-
+            console.log("user", user);
             return resolve({
               id: user._id,
               name: user.name,
               email: user.email,
               emailVerified: user.emailVerified,
+              avatar: user.avatar,
               admin: user.admin || false
             });
           });
@@ -238,11 +245,13 @@ module.exports = () => {
               // Check credentials - e.g. compare bcrypt password hashes
               try {
                 const hash = await bcrypt.compare(form.password, user.password);
-                console.log("signIn", hash);
-                return resolve(user);
+                if (hash) {
+                  return resolve(user);
+                } else {
+                  return reject(null);
+                }
               } catch (e) {
-                console.log("e: ", e, form.password, user.password);
-                return resolve(null);
+                return reject(null);
               }
             }
           );

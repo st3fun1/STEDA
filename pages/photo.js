@@ -93,8 +93,8 @@ class Photo extends Page {
                   <CardImg
                     top
                     width="100%"
-                    src={photo.location}
-                    alt={photo.s3_key}
+                    src={photo.s3_key ? photo.location : photo.fileLink}
+                    alt={photo.description}
                   />
                   <CardBody>
                     <CardTitle>

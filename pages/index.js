@@ -54,7 +54,9 @@ class PhotoList extends Page {
       <Layout {...this.props} navmenu={false} container={false}>
         <div className="upload-photo-container">
           <Link href="/upload-photo">
-            <a href="/upload-photo">share smthg</a>
+            <a href="/upload-photo" id="link">
+              Share
+            </a>
           </Link>
         </div>
         <Container>

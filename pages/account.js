@@ -60,7 +60,8 @@ export default class extends Page {
         this.setState({
           name: user.name,
           email: user.email,
-          emailVerified: user.emailVerified
+          emailVerified: user.emailVerified,
+          avatar: user.avatar
         });
       });
   }
@@ -161,6 +162,11 @@ export default class extends Page {
                   value={this.state.session.csrfToken}
                   onChange={() => {}}
                 />
+                <FormGroup>
+                  <Col sm={10} md={4}>
+                    <img src={this.state.avatar} />
+                  </Col>
+                </FormGroup>
                 <FormGroup row>
                   <Label sm={2}>Name:</Label>
                   <Col sm={10} md={8}>

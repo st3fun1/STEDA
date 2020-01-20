@@ -53,10 +53,10 @@
 .upload-photo-container {
   position: absolute;
   top: 50%;
-  right: 0;
-  transform: translateX(-50%);
+  right: -9px;
   padding: 8px;
   border: 2px solid black;
+  transform: rotate(90deg) translateX(-50%);
 }
 
 .grid-container {

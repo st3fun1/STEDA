@@ -36,15 +36,23 @@ module.exports = () => {
       strategyOptions: {
         clientID: process.env.FACEBOOK_ID,
         clientSecret: process.env.FACEBOOK_SECRET,
-        profileFields: ["id", "displayName", "email", "link"]
+        profileFields: [
+          "id",
+          "displayName",
+          "email",
+          "link",
+          "picture.type(large)"
+        ]
       },
       getProfile(profile) {
+        console.log("PROFILE", profile);
         // Normalize profile into one with {id, name, email} keys
         return {
           profile,
           id: profile.id,
           name: profile.displayName,
-          email: profile._json.email
+          email: profile._json.email,
+          picture: profile.photos ? profile.photos[0].value : ""
         };
       }
     });
@@ -101,6 +109,7 @@ module.exports = () => {
         return {
           id: profile.id,
           name: profile.displayName,
+          avatar: profile.photos[0] ? profile.photos[0].value : null,
           email:
             profile.emails && profile.emails[0].value
               ? profile.emails[0].value

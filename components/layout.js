@@ -10,22 +10,16 @@ import {
   NavItem,
   Button,
   Form,
-  NavLink,
-  Collapse,
   Navbar,
-  NavbarToggler,
-  NavbarBrand,
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   ListGroup,
   ListGroupItem
 } from "reactstrap";
 import Signin from "./signin";
 import { NextAuth } from "next-auth/client";
 import Cookies from "universal-cookie";
-import Package from "../package";
 import Styles from "../css/index.scss";
 
 export default class extends React.Component {
@@ -120,13 +114,6 @@ export default class extends React.Component {
                   </a>
                 </Link>
               </NavItem>
-              <Nav Item>
-                <Link href="/upload-photo">
-                  <a href="/upload-photo" className="dropdown-item">
-                    Upload files or share link
-                  </a>
-                </Link>
-              </Nav>
             </Nav>
             <UserMenu
               session={this.props.session}
@@ -268,15 +255,30 @@ export class UserMenu extends React.Component {
           <div tabIndex="2" className="dropdown nojs-dropdown">
             <div className="nav-item">
               <span className="dropdown-toggle nav-link d-none d-md-block">
-                <span
-                  className="icon ion-md-contact"
-                  style={{
-                    fontSize: "2em",
-                    position: "absolute",
-                    top: -5,
-                    left: -25
-                  }}
-                ></span>
+                {this.props.session.user && this.props.session.user.avatar ? (
+                  <img
+                    src={this.props.session.user.avatar}
+                    style={{
+                      fontSize: "2em",
+                      position: "absolute",
+                      top: -5,
+                      left: -40,
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%"
+                    }}
+                  />
+                ) : (
+                  <span
+                    className="icon ion-md-contact"
+                    style={{
+                      fontSize: "2em",
+                      position: "absolute",
+                      top: -5,
+                      left: -25
+                    }}
+                  ></span>
+                )}
               </span>
               <span className="dropdown-toggle nav-link d-block d-md-none">
                 <span className="icon ion-md-contact mr-2"></span>

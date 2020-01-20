@@ -41,7 +41,10 @@ class UserList extends Page {
                       <CardImg
                         top
                         width="100%"
-                        src="https://wolper.com.au/wp-content/uploads/2017/10/image-placeholder.jpg"
+                        src={
+                          user.avatar ||
+                          "https://wolper.com.au/wp-content/uploads/2017/10/image-placeholder.jpg"
+                        }
                         alt="Card image cap"
                       />
                       <CardBody>
@@ -81,7 +84,4 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators({ getUserList }, dispatch);
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UserList);
+export default connect(mapStateToProps, mapDispatchToProps)(UserList);

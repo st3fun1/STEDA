@@ -95,7 +95,6 @@ export default class extends Page {
 
   onChange = e => {
     e.persist();
-    console.log("e", e);
     this.setState({
       photo: {
         src: URL.createObjectURL(e.target.files[0]),

@@ -19,6 +19,7 @@ module.exports = (expressApp, functions) => {
           res.json({
             name: user.name,
             email: user.email,
+            avatar: user.avatar,
             emailVerified:
               user.emailVerified && user.emailVerified === true ? true : false
           });
