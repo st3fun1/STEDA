@@ -24,13 +24,14 @@ module.exports = expressApp => {
 
   // TODO: sanitizer
   expressApp.post("/api/comment", (req, res) => {
-    const body = req.body;
+    const { photoId, userId, comment, date } = req.body;
     return new Promise((resolve, reject) => {
       commentCollection.insertOne(
         {
-          photoId: req.body.photoId,
-          userId: req.body.userId,
-          comment: req.body.comment
+          photoId,
+          userId,
+          comment,
+          date
         },
         (err, data) => {
           if (err) {
@@ -60,13 +61,16 @@ module.exports = expressApp => {
 
   expressApp.get("/api/commentsByPhotoId/:photoId", (req, res) => {
     const photoId = req.params.photoId;
+    const resPerPage = 5;
+    const page = req.params.page || 0;
     return new Promise((resolve, reject) => {
       commentCollection
         .find({
           photoId
         })
-        .limit(5)
         .sort({ $natural: -1 })
+        .skip(resPerPage * (page === 0 ? 0 : page) - page)
+        .limit(resPerPage)
         .toArray((err, comments) => {
           if (err) {
             return reject(err);
@@ -83,12 +87,14 @@ module.exports = expressApp => {
             .toArray((err, users) => {
               if (err) reject(err);
               resolve({
-                data: comments.map(comment => ({
-                  ...comment,
-                  user: users.find(
-                    item => item._id.toString() === comment.userId
-                  )
-                }))
+                data: comments
+                  .map(comment => ({
+                    ...comment,
+                    user: users.find(
+                      item => item._id.toString() === comment.userId
+                    )
+                  }))
+                  .reverse()
               });
             });
         });

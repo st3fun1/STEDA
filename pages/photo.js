@@ -60,7 +60,8 @@ class Photo extends Page {
       _csrf: await NextAuth.csrfToken(),
       photoId,
       userId: currentUser.id,
-      comment: this.state.comment
+      comment: this.state.comment,
+      date: new Date()
     };
     this.setState({
       comment: ""
@@ -129,8 +130,18 @@ class Photo extends Page {
                 {comments &&
                   comments.map(item => (
                     <ListGroupItem key={item._id}>
-                      <b>{item.user ? item.user.name : "Anonymous"}</b>:{" "}
-                      {item.comment}
+                      <b>
+                        {item.user ? item.user.name : "Anonymous"}
+                        {item.date ? (
+                          <small>
+                            {" "}
+                            ({new Date(item.date).toLocaleString()}){" "}
+                          </small>
+                        ) : (
+                          ""
+                        )}
+                      </b>
+                      : {item.comment}
                     </ListGroupItem>
                   ))}
               </ListGroup>
