@@ -30,6 +30,7 @@ class PhotoList extends Page {
 
   render() {
     const { photos } = this.props;
+    console.log("photos: ", photos);
     const childElements = photos.map(function(element) {
       return (
         (element.fileLink || element.location) && (
@@ -42,8 +43,10 @@ class PhotoList extends Page {
                 />
               </a>
             </Link>
-            <div title={element.description} className="photo-description">
-              {element.description}
+            <div className="image-details">
+              <div title={element.description} className="photo-description">
+                {element.description}
+              </div>
             </div>
           </div>
         )

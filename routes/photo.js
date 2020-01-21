@@ -29,21 +29,40 @@ module.exports = expressApp => {
     throw new Error("expressApp option must be an express server instance");
   }
 
-  expressApp.get("/api/photo/list", (req, res) => {
-    return new Promise((resolve, reject) => {
-      photoCollection.find({}).toArray((err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(data);
-      });
-    })
-      .then(photos => {
-        res.json(photos);
-      })
-      .catch(err => {
-        return res.status(500);
-      });
+  expressApp.get("/api/photo/list", async (req, res) => {
+    try {
+      let photos = await photoCollection.find({}).toArray();
+      const userIds = [...new Set(photos.map(photo => photo.userId))].map(id =>
+        ObjectID(id)
+      );
+      const users = await usersCollection
+        .find({
+          _id: {
+            $in: userIds
+          }
+        })
+        .toArray();
+
+      photos = photos.map(photo => ({
+        ...photo,
+        user: (function() {
+          const userData = users.find(
+            item => item._id.toString() === photo.userId.toString()
+          );
+          return userData
+            ? {
+                _id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                avatar: userData.avatar
+              }
+            : {};
+        })()
+      }));
+      res.send(photos);
+    } catch (e) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   });
 
   expressApp.get("/api/photo/byUserId/:userId", (req, res) => {
@@ -82,12 +101,15 @@ module.exports = expressApp => {
         })
         .toArray();
       // TODO: for current user
+
       const likes = await likesCollection
         .find({
-          photoId: req.params.photoId,
-          userId: req.session.passport.user
+          photoId: ObjectID(req.params.photoId),
+          userId: ObjectID(req.session.passport.user.id)
         })
         .toArray();
+
+      console.log("likes", likes);
 
       res.json({
         ...photo[0],
