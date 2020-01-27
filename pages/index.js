@@ -44,9 +44,11 @@ class PhotoList extends Page {
               </a>
             </Link>
             <div className="image-details">
-              <div title={element.description} className="photo-description">
-                {element.description}
-              </div>
+              <a href={`/photo/${element._id}`}>
+                <div title={element.description} className="photo-description">
+                  {element.description}
+                </div>
+              </a>
             </div>
           </div>
         )

@@ -191,7 +191,7 @@ export default class extends Page {
                           ) : (
                             <></>
                           )}
-                          <p>
+                          <p className="upload-description">
                             Drag 'n' drop some files here, or click to select
                             files
                           </p>

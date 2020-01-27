@@ -23,11 +23,24 @@ pre {
 .navbar .btn,
 .navbar .dropdown-item,
 .navbar button {
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  &:hover {
+    color: lightblue;
+    background-color: inherit;
+  }
 }
 
 .navbar {
-  border-bottom: 1px solid #ddd;
+  text-transform: uppercase;
+}
+
+.navbar-light .dropdown-toggle.nav-link {
+  color: white;
+  &:hover {
+    color: "lightblue";
+  }
 }
 
 @media (max-width: 768px) {
@@ -86,4 +99,3 @@ pre {
   background: #fff;
   color: #000;
 }
-

@@ -26,6 +26,7 @@ import {
   addComment,
   getComments
 } from "modules/comment/actions/commentActions";
+import commentStyles from "styles/comment";
 
 class Photo extends Page {
   static async getInitialProps({ query, ...p }) {
@@ -84,86 +85,121 @@ class Photo extends Page {
     const { photo, comments, session } = this.props;
 
     return (
-      <Layout {...this.props} navmenu={false} container={false}>
-        <Container>
-          <h1 className="title">Photo</h1>
-          <Row>
-            <Col md={3} sm={12}>
-              {photo && (
-                <Card style={{ height: "auto" }}>
-                  <CardImg
-                    top
-                    width="100%"
-                    src={photo.s3_key ? photo.location : photo.fileLink}
-                    alt={photo.description}
-                  />
-                  <CardBody>
-                    <CardTitle>
-                      <div className="details">
-                        Photo of{" "}
-                        <Link href={`/user/${photo.userId}`}>
-                          <a href={`/user/${photo.userId}`}>
-                            {photo.user.name}
-                          </a>
-                        </Link>
-                      </div>
-                      {session.user && (
-                        <div className="actions">
-                          {photo.userId !== session.user.id && (
-                            <Button
-                              onClick={this.handleLike}
-                              outline
-                              color="primary"
-                            >
-                              {photo.liked ? "Dislike" : "Like"}
-                            </Button>
-                          )}
+      <>
+        <Layout {...this.props} navmenu={false} container={false}>
+          <Container
+            style={{
+              marginTop: "40px"
+            }}
+          >
+            <Row>
+              <Col md={3} sm={12}>
+                {photo && (
+                  <Card
+                    style={{
+                      height: "auto",
+                      borderRadius: "3px",
+                      backgroundColor: "black"
+                    }}
+                  >
+                    <CardImg
+                      top
+                      width="100%"
+                      src={photo.s3_key ? photo.location : photo.fileLink}
+                      alt={photo.description}
+                    />
+                    <CardBody style={{ padding: 0, paddingTop: 16 }}>
+                      <CardTitle
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexWrap: "wrap"
+                        }}
+                      >
+                        <div className="details" style={{ flexGrow: 1 }}>
+                          <span
+                            style={{
+                              textTransform: "uppercase",
+                              color: "lightblue"
+                            }}
+                          >
+                            <b>{photo.description}</b> by{" "}
+                          </span>
+                          <Link href={`/user/${photo.userId}`}>
+                            <a href={`/user/${photo.userId}`}>
+                              {photo.user.name}
+                            </a>
+                          </Link>
                         </div>
-                      )}
-                    </CardTitle>
-                  </CardBody>
-                </Card>
-              )}
-            </Col>
-            <Col md={9} sm={12}>
-              <ListGroup>
-                {comments &&
-                  comments.map(item => (
-                    <ListGroupItem key={item._id}>
-                      <b>
-                        {item.user ? item.user.name : "Anonymous"}
-                        {item.date ? (
-                          <small>
-                            {" "}
-                            ({new Date(item.date).toLocaleString()}){" "}
-                          </small>
-                        ) : (
-                          ""
+                        {session.user && (
+                          <div className="actions" style={{ paddingTop: 8 }}>
+                            {photo.userId !== session.user.id && (
+                              <Button
+                                onClick={this.handleLike}
+                                outline
+                                color="primary"
+                              >
+                                {photo.liked ? "Dislike" : "Like"}
+                              </Button>
+                            )}
+                          </div>
                         )}
-                      </b>
-                      : {item.comment}
-                    </ListGroupItem>
-                  ))}
-              </ListGroup>
-              <Form onSubmit={this.handleFormSubmit}>
-                <FormGroup>
-                  <Label for="comment">Comment</Label>
-                  <Input
-                    style={{ minHeight: "200px", overflowY: "hidden" }}
-                    type="textarea"
-                    name="comment"
-                    value={this.state.comment}
-                    onChange={this.setComment}
-                    id="comment"
-                    placeholder="What's on your mind?"
-                  />
-                </FormGroup>
-                <Button>Submit</Button>
-              </Form>
-            </Col>
-          </Row>
-        </Container>
-      </Layout>
+                      </CardTitle>
+                    </CardBody>
+                  </Card>
+                )}
+              </Col>
+              <Col md={9} sm={12}>
+                <ListGroup
+                  className="comment"
+                  style={{
+                    marginBottom: "16px"
+                  }}
+                >
+                  {comments &&
+                    comments.map(item => (
+                      <ListGroupItem key={item._id}>
+                        <b>
+                          {item.user ? item.user.name : "Anonymous"}
+                          {item.date ? (
+                            <small>
+                              {" "}
+                              ({new Date(item.date).toLocaleString()}){" "}
+                            </small>
+                          ) : (
+                            ""
+                          )}
+                        </b>
+                        : {item.comment}
+                      </ListGroupItem>
+                    ))}
+                </ListGroup>
+                <Form onSubmit={this.handleFormSubmit}>
+                  <FormGroup>
+                    <Input
+                      style={{ minHeight: "200px", overflowY: "hidden" }}
+                      type="textarea"
+                      name="comment"
+                      value={this.state.comment}
+                      onChange={this.setComment}
+                      id="comment"
+                      placeholder="What's on your mind?"
+                    />
+                  </FormGroup>
+                  <Button>Submit</Button>
+                </Form>
+              </Col>
+            </Row>
+          </Container>
+        </Layout>
+        <style jsx global>
+          {`
+            .list-group-item {
+              color: black;
+            }
+          `}
+        </style>
+      </>
     );
   }
 }

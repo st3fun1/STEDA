@@ -1,7 +1,9 @@
 .file-uploader-container {
-  height: 400px;
+  height: 200px;
+  width: 200px;
   margin-top: 32px;
   overflow: hidden;
+  position: relative;
 }
 .thumbnail {
   height: 70%;
@@ -17,8 +19,9 @@
   padding: 16px 0px;
 }
 .image-element {
-  max-width: 100%;
+  width: 100%;
   height: auto;
+  min-height: 150px;
   display: block;
 }
 

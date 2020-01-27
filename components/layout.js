@@ -21,6 +21,7 @@ import Signin from "./signin";
 import { NextAuth } from "next-auth/client";
 import Cookies from "universal-cookie";
 import Styles from "../css/index.scss";
+import GlobalStyles from "styles/global";
 
 export default class extends React.Component {
   static propTypes() {
@@ -89,7 +90,8 @@ export default class extends React.Component {
           <div className="nojs-navbar">
             <Nav
               style={{
-                justifyContent: "center"
+                justifyContent: "center",
+                color: "white"
               }}
               navbar
             >
@@ -275,7 +277,8 @@ export class UserMenu extends React.Component {
                       fontSize: "2em",
                       position: "absolute",
                       top: -5,
-                      left: -25
+                      left: -25,
+                      color: "white"
                     }}
                   ></span>
                 )}
@@ -285,7 +288,13 @@ export class UserMenu extends React.Component {
                 {session.user.name || session.user.email}
               </span>
             </div>
-            <div className="dropdown-menu">
+            <div
+              className="dropdown-menu"
+              style={{
+                backgroundColor: "black",
+                border: "1px solid white"
+              }}
+            >
               <Link href="/account">
                 <a href="/account" className="dropdown-item">
                   <span className="icon ion-md-person mr-1"></span> Your Account
