@@ -10,7 +10,12 @@ import {
   GET_LIKED_PHOTOS
 } from "../reducers/photoTypes";
 
-const getPhotoList = () => dispatch => {
+const getPhotoList = () => (dispatch, getState) => {
+  const state = getState();
+  if (state.photos.photosAreReady) {
+    return;
+  }
+
   axios.get("/api/photo/list").then(response => {
     dispatch({
       type: GET_PHOTOS,

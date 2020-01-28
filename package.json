@@ -7,6 +7,7 @@
   "repository": "https://github.com/iaincollins/nextjs-starter.git",
   "main": "server.js",
   "dependencies": {
+    "@material-ui/styles": "^4.9.0",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
     "aws-sdk": "^2.542.0",

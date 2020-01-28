@@ -70,7 +70,50 @@ export default class extends React.Component {
           <style dangerouslySetInnerHTML={{ __html: Styles }} />
           <script src="https://cdn.polyfill.io/v2/polyfill.min.js" />
         </Head>
-        <Navbar light className="navbar navbar-expand-md pt-3 pb-3">
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            backgroundColor: "rgb(56,56,56)",
+            paddingTop: "16px",
+            paddingBottom: "16px",
+            boxShadow: "0px 10px 5px 0px rgba(0,0,0,0.75)",
+            borderBottom: "3px solid black"
+          }}
+        >
+          <h1
+            style={{
+              flexGrow: 1,
+              width: "100%",
+              textAlign: "center",
+              textTransform: "uppercase",
+              fontSize: "22px",
+              fontWeight: "bold"
+            }}
+          >
+            STEDA
+          </h1>
+          <h2
+            style={{
+              flexGrow: 1,
+              width: "100%",
+              textAlign: "center",
+              fontSize: "18px",
+              fontWeight: "bold"
+            }}
+          >
+            Memories togheter
+          </h2>
+        </header>
+        <Navbar
+          light
+          className="navbar navbar-expand-md pt-3 pb-3"
+          style={{
+            backgroundColor: "rgb(56,56,56)",
+            borderBottom: "3px solid black"
+          }}
+        >
           {/* <Link  href="/">
             <NavbarBrand href="/">
               <span className="icon ion-md-home mr-1"></span> {Package.name}

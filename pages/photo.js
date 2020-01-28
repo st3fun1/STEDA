@@ -26,7 +26,8 @@ import {
   addComment,
   getComments
 } from "modules/comment/actions/commentActions";
-import commentStyles from "styles/comment";
+import commentStyles from "modules/photo/styles/comment.styles";
+import { withStyles } from "@material-ui/styles";
 
 class Photo extends Page {
   static async getInitialProps({ query, ...p }) {
@@ -82,7 +83,7 @@ class Photo extends Page {
   };
 
   render() {
-    const { photo, comments, session } = this.props;
+    const { photo, comments, session, classes } = this.props;
 
     return (
       <>
@@ -158,7 +159,10 @@ class Photo extends Page {
                 >
                   {comments &&
                     comments.map(item => (
-                      <ListGroupItem key={item._id}>
+                      <ListGroupItem
+                        key={item._id}
+                        className={classes.listGroupItem}
+                      >
                         <b>
                           {item.user ? item.user.name : "Anonymous"}
                           {item.date ? (
@@ -192,13 +196,6 @@ class Photo extends Page {
             </Row>
           </Container>
         </Layout>
-        <style jsx global>
-          {`
-            .list-group-item {
-              color: black;
-            }
-          `}
-        </style>
       </>
     );
   }
@@ -223,4 +220,7 @@ const mapDispatchToProps = dispatch => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Photo);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(commentStyles)(Photo));
