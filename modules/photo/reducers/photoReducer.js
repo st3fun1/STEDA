@@ -13,6 +13,9 @@ const initialState = {
   photoById: null,
   isPending: false,
   isReady: false,
+  photosAreReady: false,
+  photosArePending: false,
+  photosError: false,
   error: false,
   likedPhotos: []
 };
@@ -22,7 +25,8 @@ export default (state = initialState, action) => {
     case GET_PHOTOS:
       return {
         ...state,
-        photos: action.payload
+        photos: action.payload,
+        photosAreReady: true
       };
     case GET_PHOTO_BY_ID:
       return {
